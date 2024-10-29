@@ -1,0 +1,66 @@
+from flask import Flask, request, jsonify
+import pandas as pd
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+
+app = Flask(__name__)
+
+# Baca data dan siapkan model
+data = pd.read_csv('clustered_nutritional_data_with_categories.csv')
+features = data[['calories', 'proteins', 'fat', 'carbohydrate']]
+scaler = StandardScaler()
+features_scaled = scaler.fit_transform(features)
+
+# Membangun dan melatih model Random Forest
+X = features_scaled
+y = data['target']
+clf = RandomForestClassifier(n_estimators=100, random_state=0)
+clf.fit(X, y)
+
+@app.route('/recommend', methods=['POST'])
+def recommend():
+    user_data = request.json
+    age = user_data['age']
+    weight = user_data['weight']
+    height = user_data['height']
+    gender = user_data['gender']
+    activity_level = user_data['activity_level']
+    goal = user_data['goal']  # 'weight_loss', 'weight_gain', 'healthy'
+
+    # Hitung BMR dan kebutuhan kalori
+    if gender == 'male':
+        bmr = 10 * weight + 6.25 * height - 5 * age + 5
+    else:
+        bmr = 10 * weight + 6.25 * height - 5 * age - 161
+
+    activity_factors = {'sedentary': 1.2, 'light': 1.375, 'moderate': 1.55, 'active': 1.725, 'very_active': 1.9}
+    calorie_needs = bmr * activity_factors[activity_level]
+
+    # Tentukan target kalori untuk masing-masing makanan
+    if goal == 'weight_loss':
+        calorie_needs -= 500
+    elif goal == 'weight_gain':
+        calorie_needs += 500
+
+    breakfast_calories = calorie_needs * 0.25
+    lunch_calories = calorie_needs * 0.35
+    dinner_calories = calorie_needs * 0.40
+
+    # Buat rekomendasi makanan (gunakan model Random Forest atau metode lain)
+    def recommend_food(calories):
+        food_recommendations = data[data['calories'] <= calories]
+        return food_recommendations[['name', 'calories']].to_dict(orient='records')
+
+    breakfast_recommendations = recommend_food(breakfast_calories)
+    lunch_recommendations = recommend_food(lunch_calories)
+    dinner_recommendations = recommend_food(dinner_calories)
+
+    return jsonify({
+        'breakfast': breakfast_recommendations,
+        'lunch': lunch_recommendations,
+        'dinner': dinner_recommendations
+    })
+
+if __name__ == '__main__':
+    app.run(debug=True)
