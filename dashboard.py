@@ -22,12 +22,20 @@ mysql = MySQL(app)
 def index():
     return render_template('index.html')
 
-@app.route('/dashboard')
-def dashboard():
-    if 'loggedin' in session:
-        return render_template('dashboard.html')
+@app.route('/user_dashboard')
+def user_dashboard():
+    if session.get('loggedin') and session.get('actor') == '2':
+        return render_template('user_dashboard.html')
     else:
-        flash('Harap Login Dulu', 'danger')
+        flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
+        return redirect(url_for('login'))
+
+@app.route('/admin_dashboard')
+def admin_dashboard():
+    if session.get('loggedin') and session.get('actor') == '1':
+        return render_template('admin_dashboard.html')
+    else:
+        flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
         return redirect(url_for('login'))
 
 @app.route('/profile')
@@ -50,25 +58,31 @@ def article():
 def plandiet():
      return render_template('plandiet.html')
 
-@app.route('/login',methods=('GET', 'POST'))
+@app.route('/login', methods=('GET', 'POST'))
 def login():
-     if request.method == 'POST':
-         email=request.form['email']
-         password=request.form['password']
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
 
-         cursor = mysql.connection.cursor()
-         cursor.execute('SELECT * FROM user WHERE email=%s', (email,))
-         akun= cursor.fetchone()
-         if akun is None:
-             flash('Login Gagal, Cek Username/E-Mail Anda','danger')
-         elif not check_password_hash(akun[3],password):
-             flash('Login Gagal, Cek Password Anda','danger')
-         else:
-             session['loggedin']=True
-             session['email']=akun[1]
-             session['actor']=akun[5]
-             return redirect(url_for('dashboard'))
-     return render_template('login.html')
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM user WHERE email=%s', (email,))
+        akun = cursor.fetchone()
+
+        if akun is None:
+            flash('Login Gagal, Cek Username/E-Mail Anda', 'danger')
+        elif not check_password_hash(akun[3], password):
+            flash('Login Gagal, Cek Password Anda', 'danger')
+        else:
+            session['loggedin'] = True
+            session['email'] = akun[1]
+            session['actor'] = akun[5]  
+            
+            if session['actor'] == '2':  
+                return redirect(url_for('user_dashboard'))
+            elif session['actor'] == '1':  # Admin
+                return redirect(url_for('admin_dashboard'))
+    
+    return render_template('login.html')
 
 @app.route('/signup', methods=('GET', 'POST'))
 def signup():

@@ -70,22 +70,18 @@
 
 			<div class="collapse navbar-collapse" id="navbarmain">
 				<ul class="navbar-nav ml-auto">
-                    {% if session['actor'] == '2' %}
-                        <li class="nav-item active"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+                    
+                        <li class="nav-item active"><a class="nav-link" href="{{ url_for('user_dashboard') }}">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('plandiet') }}">Perencanaan Diet</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('recipe') }}">Resep Masakan</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('article') }}">Hidup Bersih dan Sehat</a></li>
-                    {% else %}
-                        <li class="nav-item active"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
-                       
-                    {% endif %}
-                    <li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle" href="blog-sidebar.html" id="dropdown05" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hello, {{session.email}} <i class="icofont-thin-down"></i></a>
-						<ul class="dropdown-menu" aria-labelledby="dropdown05">
-                            <li><a class="dropdown-item" href="{{ url_for('profile') }}">Profile</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
-						</ul>
-					</li>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="{{ url_for('profile') }}" id="dropdown05" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hello, {{session.email}} <i class="icofont-thin-down"></i></a>
+							<ul class="dropdown-menu" aria-labelledby="dropdown05">
+								<li><a class="dropdown-item" href="{{ url_for('profile') }}">Profile</a></li>
+								<li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+							</ul>
+						</li>
                     
 					
 				</ul>
