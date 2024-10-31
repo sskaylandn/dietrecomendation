@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+
+<!--
+ // WEBSITE: https://themefisher.com
+ // TWITTER: https://twitter.com/themefisher
+ // FACEBOOK: https://www.facebook.com/themefisher
+ // GITHUB: https://github.com/themefisher/
+-->
+
+<html lang="en">
+<head>
+
+  <!-- Basic Page Needs
+  ================================================== -->
+  <meta charset="utf-8">
+  <title>Pola Hidup Sehat - Login</title>
+
+  <!-- Mobile Specific Metas
+  ================================================== -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="Health Care Medical Html5 Template">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="author" content="Themefisher">
+  <meta name="generator" content="Themefisher Novena HTML Template v1.0">
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" type="image/x-icon"  href="{{ url_for('static', filename='/images/favicon.png') }}" />
+
+  <!-- 
+  Essential stylesheets
+  =====================================-->
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/bootstrap/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/icofont/icofont.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/slick-carousel/slick/slick.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/slick-carousel/slick/slick-theme.css') }}">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body id="top">
+
+<header>
+</header>
+
+<section class="page-title bg-1">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="block text-center">
+          <span class="text-white">Mari Mulai</span>
+          <h1 class="text-capitalize mb-4 text-lg">Pola Hidup Sehat</h1>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- contact form start -->
+
+<section class="contact-form-wrap section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <div class="section-title text-center">
+          <h2 class="text-md mb-2">Login</h2>
+          {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                <strong>{{message}}</strong> 
+              </div>
+            {% endfor %}
+          {% endif %}
+          {% endwith %}
+          <div class="divider mx-auto my-4"></div>
+          <p class="mb-5"></p>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12 col-md-12 col-sm-12">
+        <form id="login"  method="post" action="{{url_for('login')}}">
+
+
+          <div class="row justify-content-center">
+            <div class="col-lg-4 text-center">
+              <div class="form-group">
+                <input name="email" id="email" type="email" class="form-control" placeholder="Masukkan E-Mail" required>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row justify-content-center">
+            <div class="col-lg-4 text-center">
+              <div class="form-group">
+                <input name="password" id="password" type="password" class="form-control" placeholder="Masukkan Password" required>
+              </div>
+            </div>
+          </div>
+          <div class="row justify-content-center">
+            <div class="col-lg-4 text-center">
+              <div class="form-group">
+                <input class="btn btn-main btn-round-full" name="login" type="submit" value="LOGIN"></input>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row justify-content-center">
+            <div class="col-lg-4 text-center">
+              <div class="form-group">
+               Belum memiliki akun? <a href="{{ url_for('signup') }}">Buat Akun</a>
+               <br>Lupa Password? <a href="{{ url_for('forgetpass') }}">Lupa Password</a>
+              </div>
+            </div>
+          </div>
+          
+
+          
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- footer Start -->
+<footer class="footer section gray-bg">
+	<div class="container">
+        <div class="row">
+        </div>
+    
+        <div class="footer-btm py-4 mt-5">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-lg-12 text-center">
+                    <div class="copyright">
+                        Pola Hidup Sehat - Kayla Shareta Andien
+                    </div>
+                </div>
+            </div>    
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4">
+                <a class="backtop scroll-top-to reveal" href="#top">
+                    <i class="icofont-long-arrow-up"></i>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</footer>
+   
+
+    <!-- 
+    Essential Scripts
+    =====================================-->
+    <script src="plugins/jquery/jquery.js"></script>
+    <script src="plugins/bootstrap/bootstrap.min.js"></script>
+    <script src="plugins/slick-carousel/slick/slick.min.js"></script>
+    <script src="plugins/shuffle/shuffle.min.js"></script>
+
+    <!-- Google Map -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAkeLMlsiwzp6b3Gnaxd86lvakimwGA6UA"></script>
+    <script src="plugins/google-map/gmap.js"></script>
+    
+    <script src="js/script.js"></script>
+
+  </body>
+  </html>

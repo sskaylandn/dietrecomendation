@@ -1,0 +1,67 @@
+ <div class="row justify-content-center">
+            <div class="col-lg-4 text-center">
+              <div class="form-group">
+                <input name="height" id="height" type="number" class="form-control" placeholder="Masukkan Tinggi (Dalam cm)" required>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row justify-content-center">
+            <div class="col-lg-4 text-center">
+              <div class="form-group">
+                <input name="weight" id="weight" type="number" class="form-control" placeholder="Masukkan Berat (Dalam kg)" required>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row justify-content-center">
+            <div class="col-lg-4 text-center">
+                <div class="form-group">
+                    <label for="gender">Jenis Kelamin:</label>
+                    <select name="gender" id="gender" class="form-control" required>
+                        <option value="">Pilih Jenis Kelamin</option>
+                        <option value="pria">Pria</option>
+                        <option value="wanita">Wanita</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+          <div class="row justify-content-center">
+            <div class="col-lg-4 text-center">
+              <div class="form-group">
+                <label for="age">Umur:</label>
+                <input name="age" id="age" type="number" class="form-control" placeholder="Masukkan Umur" required>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row justify-content-center">
+            <div class="col-lg-4 text-center">
+                <div class="form-group">
+                    <label for="goal">Tujuan Diet:</label>
+                    <select name="goal" id="goal" class="form-control" required>
+                        <option value="">Pilih Tujuan Diet</option>
+                        <option value="maintain">Maintain</option>
+                        <option value="lose">Lose</option>
+                        <option value="gain">Gain</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+          
+        <div class="row justify-content-center">
+          <div class="col-lg-4 text-center">
+              <div class="form-group">
+                  <label for="activity">Tingkat Aktivitas:</label>
+                  <select name="activity" id="activity" class="form-control" required>
+                      <option value="">Pilih Tingkat Aktivitas</option>
+                      <option value="sedentary">Sedentary</option>
+                      <option value="light">Light</option>
+                      <option value="moderate">Moderate</option>
+                      <option value="active">Active</option>
+                      <option value="very active">Very Active</option>
+                  </select>
+              </div>
+          </div>
+      </div>
