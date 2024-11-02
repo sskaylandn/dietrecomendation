@@ -96,21 +96,21 @@
 <div class="container-fluid">
     <div class="row no-gutters">
         <!-- Sidebar Start -->
-        <div class="col-lg-3 col-md-4 col-sm-12"> <!-- Menggunakan grid responsif -->
-            <div class="sidebar-wrap pl-3 mt-4 mt-lg-0"> <!-- Padding kiri -->
+        <div class="col-lg-2 col-md-4 col-sm-12">
+            <div class="sidebar-wrap pl-3 mt-4 mt-lg-0"> 
                 <div class="sidebar-widget category mb-3">
                     <h5 class="mb-4">Menu Admin</h5>
                     <ul class="list-unstyled">
-                        <li class="align-items-center">
+                        <li class="align-items-center {% if active_page == 'food' %}active{% endif %}">
                             <a href="{{ url_for('food') }}">Data Makanan</a>
                         </li>
-                        <li class="align-items-center">
+                        <li class="align-items-center {% if active_page == 'recipe' %}active{% endif %}">
                             <a href="{{ url_for('recipe') }}">Data Resep Makanan</a>
                         </li>
-                        <li class="align-items-center">
+                        <li class="align-items-center {% if active_page == 'pengguna' %}active{% endif %}">
                             <a href="{{ url_for('pengguna') }}">Data Pengguna</a>
                         </li>
-                        <li class="align-items-center">
+                        <li class="align-items-center {% if active_page == 'article' %}active{% endif %}">
                             <a href="{{ url_for('article') }}">Data Artikel</a>
                         </li>
                     </ul>
@@ -118,14 +118,38 @@
             </div>
         </div>
         <!-- Body Center Start -->
-        <div class="container-xxl flex-grow-1 container-p-y pe-3">
-            <h4 class="py-3 mb-4"><span class="text-muted fw-light">Data /</span></h4>
+        <div class="container-xxl flex-grow-1 container-p-y pe-3 col-lg-9 col-md-4 col-sm-12">
+            <h4 class="py-3 mb-4"><span class="text-muted fw-light">Data / Makanan</span></h4>
     
             <!-- Basic Bootstrap Table -->
             <div class="card">
-            <h5 class="card-header">kk</h5>
+            <h5 class="card-header">Data Makanan</h5>
             <div class="table-responsive text-nowrap">
-                         
+                <div class="sidebar-widget schedule-widget mb-3">
+                    <div class="sidebar-widget schedule-widget mb-0 d-flex justify-content-end">
+                        <a href="{{ url_for('add_food') }}" class="btn btn-main btn-round-full mb-0">Tambah Data</a>
+                    </div>
+                    <table class="table">
+                        <thead>
+                          <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">First</th>
+                            <th scope="col">Last</th>
+                            <th scope="col">Handle</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th scope="row">1</th>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            <td>@mdo</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    
+                </div>
+                            
             </div>
         
             </div>

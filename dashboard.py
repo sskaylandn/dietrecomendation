@@ -14,8 +14,6 @@ app.config['MYSQL_OPTIONS'] = {
         'fake_flag': True,  
     }
 }
-
-
 mysql = MySQL(app)
 
 @app.route('/')
@@ -42,17 +40,11 @@ def admin_dashboard():
 def profile():
     return "<h2>profile</h2>"
 
-@app.route('/recipe')
-def recipe():
-    return "<h2>recipe</h2>"
-
 @app.route('/recomendation')
 def recomendation():
     return "<h2>recomendation</h2>"
 
-@app.route('/article')
-def article():
-     return render_template('article.html')
+
 
 @app.route('/plandiet')
 def plandiet():
@@ -121,6 +113,44 @@ def logout():
 @app.route('/forgetpass')
 def forgetpass():
      return render_template('forgetpass.html')
+
+@app.route('/pengguna')
+def pengguna():
+                          
+    return render_template('pengguna.html',active_page='pengguna')
+
+@app.route('/add_pengguna')
+def add_pengguna():
+                          
+    return render_template('add_pengguna.html',active_page='pengguna')
+
+
+@app.route('/recipe')
+def recipe():
+     return render_template('recipe.html',active_page='recipe')
+
+@app.route('/add_recipe')
+def add_recipe():
+                          
+    return render_template('add_recipe.html',active_page='recipe')
+
+@app.route('/food')
+def food():
+     return render_template('food.html',active_page='food')
+
+@app.route('/add_food')
+def add_food():
+                          
+    return render_template('add_food.html',active_page='food')
+
+@app.route('/article')
+def article():
+     return render_template('article.html',active_page='article')
+
+@app.route('/add_article')
+def add_article():
+                          
+    return render_template('add_article.html',active_page='article')
 
 if __name__ == '__main__':
     app.run(debug=True)
