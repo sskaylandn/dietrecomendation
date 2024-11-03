@@ -177,12 +177,25 @@ def delete_pengguna(userid):
 
 @app.route('/recipe')
 def recipe():
-     return render_template('recipe.html',active_page='recipe')
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM recipe ORDER BY title ASC")
+    tampilresep = cur.fetchall()
+    cur.close()
+     
+    return render_template('recipe.html',active_page='recipe', dataresep=tampilresep)
 
 @app.route('/add_recipe')
 def add_recipe():
                           
     return render_template('add_recipe.html',active_page='recipe')
+
+@app.route('/delete_recipe/<int:id>')
+def delete_recipe(id):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM recipe WHERE id=%s", (id,))
+    mysql.connection.commit()
+    flash("Data berhasil di hapus")
+    return redirect(url_for('recipe'))
 
 @app.route('/food')
 def food():
