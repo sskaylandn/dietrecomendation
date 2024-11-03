@@ -116,14 +116,64 @@ def forgetpass():
 
 @app.route('/pengguna')
 def pengguna():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM user ORDER BY actor ASC")
+    tampilpengguna = cur.fetchall()
+    cur.close()
+                          
+    return render_template('pengguna.html',active_page='pengguna', datapengguna=tampilpengguna)
+
+@app.route('/add_penguna', methods=('GET', 'POST'))
+def add_pengguna():
+    if request.method == 'POST':
+        email = request.form['email']
+        username = request.form['username']
+        password = request.form['password']
+        name = request.form['name']
+        actor = request.form['actor']
+
+        cursor = mysql.connection.cursor()
+        
+        cursor.execute('SELECT * FROM user WHERE username=%s OR email=%s', (username, email,))
+        akun = cursor.fetchone()  
+
+        if akun is None:
+            cursor.execute('INSERT INTO user (email, username, password, name, actor) VALUES (%s, %s, %s, %s, %s)', 
+                           (email, username, generate_password_hash(password), name, actor))
+            mysql.connection.commit()
+            cursor.close()  
+            flash('Berhasil Daftar Akun', 'success')
+            return redirect(url_for('pengguna'))  
+        else:
+            flash('Username atau Email sudah terdaftar', 'danger')
+            cursor.close()  
+    return render_template('add_pengguna.html',active_page='pengguna')
+
+@app.route('/update_pengguna', methods=['POST'])
+def update_pengguna():
+    if request.method == "POST":
+        userid = request.form['userid']
+        username = request.form['username']
+        email = request.form['email']
+        name = request.form['name']
+
+        cur = mysql.connection.cursor()
+        cur.execute("UPDATE user SET username=%s, email=%s, name=%s WHERE userid=%s",(username,email,name,userid))
+        mysql.connection.commit()
+        flash("Data berhasil di update")
+        return redirect(url_for('pengguna'))
                           
     return render_template('pengguna.html',active_page='pengguna')
 
-@app.route('/add_pengguna')
-def add_pengguna():
+@app.route('/delete_pengguna/<int:userid>')
+def delete_pengguna(userid):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM user WHERE userid=%s", (userid,))
+    mysql.connection.commit()
+    flash("Data berhasil di hapus")
+    return redirect(url_for('pengguna'))
                           
-    return render_template('add_pengguna.html',active_page='pengguna')
-
+    return render_template('pengguna.html',active_page='pengguna')
 
 @app.route('/recipe')
 def recipe():

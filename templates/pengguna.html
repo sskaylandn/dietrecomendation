@@ -28,6 +28,12 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/icofont/icofont.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/slick-carousel/slick/slick.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/slick-carousel/slick/slick-theme.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!--<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">-->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+
 
   <!-- Main Stylesheet -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -125,27 +131,60 @@
             <!-- Basic Bootstrap Table -->
             <div class="card">
                 <h5 class="card-header">Data Pengguna</h5>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>{{message}}</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div>
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
                 <div class="table-responsive text-nowrap">
                     <div class="sidebar-widget schedule-widget mb-3">
                         <div class="sidebar-widget schedule-widget mb-0 d-flex justify-content-end">
-                            <a href="{{ url_for('add_pengguna') }}" class="btn btn-main btn-round-full mb-0">Tambah Data</a>
+                            <a href="" class="btn btn-main btn-round-full mb-0" data-bs-toggle="modal" data-bs-target="#addpenggunaModal">Tambah Data</a>
                         </div>
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">First</th>
-                                    <th scope="col">Last</th>
-                                    <th scope="col">Handle</th>
+                                    <th scope="col">No</th>
+                                    <th scope="col">Username</th>
+                                    <th scope="col">E-Mail</th>
+                                    <th scope="col">Actor</th>
+                                    <th scope="col"></th>
                                 </tr>
                             </thead>
                             <tbody>
+                                {% for row in datapengguna %}
                                 <tr>
-                                    <th scope="row">1</th>
-                                    <td>Mark</td>
-                                    <td>Otto</td>
-                                    <td>@mdo</td>
+                                    <th scope="row">{{loop.index}}</th>
+                                    <td>{{row[1]}}</td>
+                                    <td>{{row[2]}}</td>
+                                    <td>
+                                        {% if row[5] == '1' %}
+                                            Admin
+                                        {% else %}
+                                            Pengguna
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="" type="button" class="btn btn-main btn-round-full mb-0" data-bs-toggle="modal" data-bs-target="#detailpenggunaModal{{row[0]}}">
+                                            <i class="fas fa-eye"></i> 
+                                        </a>
+                                        <a href="" class="btn btn-main btn-round-full mb-0" data-bs-toggle="modal" data-bs-target="#updatepenggunaModal{{row[0]}}">
+                                            <i class="fas fa-edit"></i> 
+                                        </a>
+                                        <a href="{{ url_for('delete_pengguna', userid=row[0]) }}" class="btn btn-main btn-round-full mb-0" onclick="confirm('Anda Yakin?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>                                        
+                                    </td>
                                 </tr>
+                                {% include "pengguna_detail.html" %}
+                                {% include "pengguna_update.html" %}
+                                {% include "pengguna_add.html" %}
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>

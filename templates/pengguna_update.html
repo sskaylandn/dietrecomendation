@@ -1,0 +1,45 @@
+<!-- Button trigger modal -->
+
+  <!-- Modal -->
+  <div class="modal fade" id="updatepenggunaModal{{row[0]}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title fs-5" id="exampleModalLabel">Update : {{row[1]}}</h3>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form method="post" action="{{url_for('update_pengguna')}}">
+            <div class="row justify-content-center">
+                <div class="col text-center">
+                  <div class="form-group">
+                    <input name="userid" id="userid" type="hidden" value="{{row[0]}}">
+                    <input name="email" id="email" type="email" class="form-control" placeholder="Masukkan E-Mail" value="{{row[2]}}"required readonly>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row justify-content-center">
+                <div class="col text-center">
+                  <div class="form-group">
+                    <input name="username" id="username" type="text" class="form-control" placeholder="Masukkan Username" value="{{row[1]}}" required readonly>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row justify-content-center">
+                <div class="col text-center">
+                  <div class="form-group">
+                    <input name="name" id="name" type="text" class="form-control" placeholder="Masukkan Nama" value="{{row[4]}}" required>
+                  </div>
+                </div>
+              </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" onclick="confirm('Anda Yakin?')">Update</button>
+        </div>
+    </form>
+      </div>
+    </div>
+  </div>
