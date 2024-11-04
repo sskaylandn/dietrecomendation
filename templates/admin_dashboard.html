@@ -96,19 +96,18 @@
 <div class="container-fluid">
     <div class="row no-gutters">
         <!-- Sidebar Start -->
-        <div class="col-lg-3 col-md-4 col-sm-12"> <!-- Menggunakan grid responsif -->
-            <div class="sidebar-wrap pl-3 mt-4 mt-lg-0"> <!-- Padding kiri -->
+        <div class="col-lg-2 col-md-4 col-sm-12"> 
+            <div class="sidebar-wrap pl-3 mt-4 mt-lg-0"> 
                 <div class="sidebar-widget category mb-3">
                     <h5 class="mb-4">Menu Admin</h5>
                     <ul class="list-unstyled">
-                        
-                        <li class="align-items-center">
+                        <li class="align-items-center {% if active_page == 'recipe' %}active{% endif %}">
                             <a href="{{ url_for('recipe') }}">Data Resep Makanan</a>
                         </li>
-                        <li class="align-items-center">
+                        <li class="align-items-center {% if active_page == 'pengguna' %}active{% endif %}">
                             <a href="{{ url_for('pengguna') }}">Data Pengguna</a>
                         </li>
-                        <li class="align-items-center">
+                        <li class="align-items-center {% if active_page == 'article' %}active{% endif %}">
                             <a href="{{ url_for('article') }}">Data Artikel</a>
                         </li>
                     </ul>
@@ -116,17 +115,46 @@
             </div>
         </div>
         <!-- Body Center Start -->
+        
         <div class="container-xxl flex-grow-1 container-p-y pe-3">
-            <h4 class="py-3 mb-4"><span class="text-muted fw-light">Data /</span></h4>
+            <h4 class="py-3 mb-4"></h4>
     
             <!-- Basic Bootstrap Table -->
-            <div class="card">
-            <h5 class="card-header">kk</h5>
-            <div class="table-responsive text-nowrap">
-                         
-            </div>
-        
-            </div>
+            
+            
+                
+                    
+                   
+                        <div class="container">
+                          <div class="row">
+                            <div class="col-lg-4 col-md-6">
+                              <div class="contact-block mb-4 mb-lg-0">
+                                <i class="icofont-ui-user-group"></i>
+                                <h5>Jumlah User Saat Ini :</h5>
+                                <h2>{{ total_user_count }}</h2>
+                              </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6">
+                              <div class="contact-block mb-4 mb-lg-0">
+                                <i class="icofont-ui-note"></i>
+                                <h5>Jumlah Artikel Saat Ini :</h5>
+                                <h2>{{ total_article_count }}</h2>
+                              </div>
+                            </div>
+                            <div class="col-lg-4 col-md-12">
+                              <div class="contact-block mb-4 mb-lg-0">
+                                <i class="icofont-food-basket"></i>
+                                <h5>Jumlah Resep Saat Ini :</h5>
+                                <h2>{{ total_recipe_count }}</h2>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                     
+                      
+                    
+                
+            
         </div>
     </div>
 </div>

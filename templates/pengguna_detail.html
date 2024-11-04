@@ -9,12 +9,21 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <pre>
-          Username  : {{row[1]}}
-          E-Mail    : {{row[2]}}
-          Nama      : {{row[4]}}
-          Aktor     : {% if row[5] == '1' %}Admin {% else %}Pengguna {% endif %}
-        </pre>
+          <dl class="row">
+            <dt class="col-sm-3">Username </dt>
+            <dd class="col-sm-9">{{row[1]}}</dd>
+          
+            <dt class="col-sm-3">E-Mail</dt>
+            <dd class="col-sm-9">{{row[2]|safe}}</dd>
+          
+            <dt class="col-sm-3">Nama</dt>
+            <dd class="col-sm-9">{{row[4]|safe}}</dd>
+
+            <dt class="col-sm-3">Aktor</dt>
+            <dd class="col-sm-9">{% if row[5] == '1' %}Admin {% else %}Pengguna {% endif %}</dd>
+          
+            
+          </dl>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

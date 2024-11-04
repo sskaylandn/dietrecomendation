@@ -1,0 +1,41 @@
+<!-- Button trigger modal -->
+<style>
+    .modal-body {
+      max-height: 70vh; /* Maksimum tinggi modal */
+      overflow-y: auto; /* Tambahkan scroll jika konten terlalu tinggi */
+    }
+  </style>
+    <!-- Modal -->
+    <div class="modal fade" id="detailartikelModal{{row[0]}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" style="max-width: 800px;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title fs-5" id="exampleModalLabel">Kategori : {{row[4]}}</h3>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+           
+            <dl class="row">
+              <dt class="col-sm-3">Judul </dt>
+              <dd class="col-sm-9">{{row[1]}}</dd>
+            
+              <dt class="col-sm-3">Isi Konten</dt>
+              <dd class="col-sm-9">{{row[2]|safe}}</dd>
+            
+              <dt class="col-sm-3">Kategori</dt>
+              <dd class="col-sm-9">{{row[3]}}</dd>
+
+              <dt class="col-sm-3">Tanggal Artikel</dt>
+              <dd class="col-sm-9">{{row[4]}}</dd>
+            
+              
+            </dl>
+         
+            
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>

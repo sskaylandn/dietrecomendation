@@ -1,19 +1,34 @@
 <!-- Button trigger modal -->
-
+<style>
+  .modal-body {
+    max-height: 70vh; /* Maksimum tinggi modal */
+    overflow-y: auto; /* Tambahkan scroll jika konten terlalu tinggi */
+  }
+</style>
   <!-- Modal -->
   <div class="modal fade" id="detailresepModal{{row[0]}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog" style="max-width: 800px;">
       <div class="modal-content">
         <div class="modal-header">
           <h3 class="modal-title fs-5" id="exampleModalLabel">Resep : {{row[1]}}</h3>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <pre>
-          Nama Masakan  : {{row[1]}}
-          Bahan Baku    : {{row[2]}}
-          Cara Memasak  : {{row[3]}}
-        </pre>
+         
+          <dl class="row">
+            <dt class="col-sm-3">Nama Masakan </dt>
+            <dd class="col-sm-9">{{row[1]}}</dd>
+          
+            <dt class="col-sm-3">Bahan Baku</dt>
+            <dd class="col-sm-9">{{row[2]|safe}}</dd>
+          
+            <dt class="col-sm-3">Cara Memasak</dt>
+            <dd class="col-sm-9">{{row[3]|safe}}</dd>
+          
+            
+          </dl>
+       
+          
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

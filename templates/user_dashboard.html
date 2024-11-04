@@ -98,58 +98,122 @@
 			<div class="col-lg-6 col-md-12 col-xl-7">
 				<div class="block">
 					<div class="divider mb-3"></div>
-					<span class="text-uppercase text-sm letter-spacing ">Mari mulai</span>
-					<h1 class="mb-3 mt-3">Pola Hidup yang Lebih Sehat</h1>
+					<h1 class="mb-3 mt-3">Hello, {{session.email}}</h1>
+					{% if data_exists %}
+					<div class="container">
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="feature-block d-lg-flex">
+									<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
+										<div class="feature-icon mb-4">
+											<i class="icofont-fruits"></i>
+										</div>
+										<span>Kondisi Saat Ini :</span>
+										<h4 class="mb-3">TINGGI BADAN</h4>
+										<h3 class="mb-3">{{ data.height }} CM</h3>
+									</div>
 					
-					<p class="mb-4 pr-5">Perkuat kesehatan Anda dengan pola hidup sehat yang meliputi makanan bergizi dan aktivitas fisik teratur. Jaga diri Anda agar tetap bugar dan berenergi sepanjang hari.</p>
+									<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
+										<div class="feature-icon mb-4">
+											<i class="icofont-bathtub"></i>
+										</div>
+										<span>Kondisi Saat Ini :</span>
+										<h4 class="mb-3">BERAT BADAN</h4>
+										<h3 class="mb-3">{{ data.weight }} KG</h3>
+									</div>
+					
+									<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
+										<div class="feature-icon mb-4">
+											<i class="icofont-female"></i>
+										</div>
+										<span>Kondisi Saat Ini :</span>
+										<h4 class="mb-3">BMI</h4>
+										<h3 class="mb-3">{{ data.bmi }}</h3>
+									</div>
+					
+									<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
+										<div class="feature-icon mb-4">
+											<i class="icofont-female"></i>
+										</div>
+										<span>Kondisi Saat Ini :</span>
+										<h4 class="mb-3">BMR</h4>
+										<h3 class="mb-3">{{ data.bmr }}</h3>
+									</div>
+					
+									<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
+										<div class="feature-icon mb-4">
+											<i class="icofont-cycling"></i>
+										</div>
+										<span>Kondisi Saat Ini :</span>
+										<h4 class="mb-3">GOALS</h4>
+										<h3 class="mb-3">{{ data.goal }}</h3>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					{% else %}
+					<h4 class="mb-3">{{ no_data_message }}</h4>
+							<a href="{{ url_for('add_userchar') }}" class="btn btn-main btn-round-full mb-0">Isi Data Diri</a>
+						<br><br>
+						<div class="container">
+							<div class="row">
+								<div class="col-lg-12">
+									<div class="feature-block d-lg-flex">
+										<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
+											<div class="feature-icon mb-4">
+												<i class="icofont-fruits"></i>
+											</div>
+											<span>Kondisi Saat Ini :</span>
+											<h4 class="mb-3">TINGGI BADAN</h4>
+											<h3 class="mb-3">{{ data.height }}</h3>
+										</div>
+						
+										<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
+											<div class="feature-icon mb-4">
+												<i class="icofont-bathtub"></i>
+											</div>
+											<span>Kondisi Saat Ini :</span>
+											<h4 class="mb-3">BERAT BADAN</h4>
+											<h3 class="mb-3">{{ data.weight }}</h3>
+										</div>
+						
+										<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
+											<div class="feature-icon mb-4">
+												<i class="icofont-female"></i>
+											</div>
+											<span>Kondisi Saat Ini :</span>
+											<h4 class="mb-3">BMI</h4>
+											<h3 class="mb-3">{{ data.bmi }}</h3>
+										</div>
+						
+										<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
+											<div class="feature-icon mb-4">
+												<i class="icofont-female"></i>
+											</div>
+											<span>Kondisi Saat Ini :</span>
+											<h4 class="mb-3">BMR</h4>
+											<h3 class="mb-3">{{ data.bmr }}</h3>
+										</div>
+						
+										<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
+											<div class="feature-icon mb-4">
+												<i class="icofont-cycling"></i>
+											</div>
+											<span>Kondisi Saat Ini :</span>
+											<h4 class="mb-3">GOALS</h4>
+											<h3 class="mb-3">{{ data.goal }}</h3>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					
+					
 					
 				</div>
-			</div>
-		</div>
-	</div>
-</section>
-<section class="features">
-	<div class="container">
-		<div class="row">
-			<div class="col-lg-12">
-				<div class="feature-block d-lg-flex">
-					<div class="feature-item mb-5 mb-lg-0">
-						<div class="feature-icon mb-4">
-							<i class="icofont-fruits"></i>
-						</div>
-                        <span>4 Pilar Gizi Seimbang</span>
-						<h4 class="mb-3">Konsumsi Aneka Ragam Pangan</h4>
-						<p class="mb-4"> Pentingnya konsumsi aneka ragam pangan untuk memenuhi kebutuhan nutrisi.</p>
-					</div>
 				
-					<div class="feature-item mb-5 mb-lg-0">
-						<div class="feature-icon mb-4">
-							<i class="icofont-bathtub"></i>
-						</div>
-                        <span>4 Pilar Gizi Seimbang</span>
-						<h4 class="mb-3">Menerapkan Pola Hidup Bersih dan Sehat</h4>
-						<p class="mb-4"> Pentingnya menjaga pola hidup yang bersih dan sehat.</p>
-					</div>
-				
-					<div class="feature-item mb-5 mb-lg-0">
-						<div class="feature-icon mb-4">
-							<i class="icofont-female"></i>
-						</div>
-                        <span>4 Pilar Gizi Seimbang</span>
-						<h4 class="mb-3">Menjaga Berat Badan Ideal</h4>
-						<p class="mb-4"> Pentingnya menjaga berat badan agar tetap ideal.</p>
-					</div>
-
-                    <div class="feature-item mb-5 mb-lg-0">
-						<div class="feature-icon mb-4">
-							<i class="icofont-cycling"></i>
-						</div>
-                        <span>4 Pilar Gizi Seimbang</span>
-						<h4 class="mb-3">Pola Hidup Aktif dan Berolahraga</h4>
-						<p class="mb-4"> Pentingnya untuk aktif dan berolahraga secara teratur.</p>
-					</div>
-
-				</div>
 			</div>
 		</div>
 	</div>
