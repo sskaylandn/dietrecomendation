@@ -54,39 +54,53 @@ def user_dashboard():
             gender = user_data[2]
             age = user_data[3]
             goal = user_data[4]
-            activity = user_data[5]
+            activity = user_data[5]  # Ambil data aktivitas dari database
 
-            
+            # Hitung BMI
             height_in_meters = height / 100  
             bmi = weight / (height_in_meters ** 2) if height_in_meters > 0 else "-"
 
-            
+            # Hitung BMR berdasarkan jenis kelamin
             if gender == 'pria':
                 bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
             elif gender == 'wanita':
                 bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age)
             else:
-                bmr = "-"  
+                bmr = "-"
 
-            
+            # Kamus untuk faktor aktivitas
+            activity_multipliers = {
+                'sedentary': 1.2,
+                'light': 1.375,
+                'moderate': 1.55,
+                'active': 1.725,
+                'veryactive': 1.9
+            }
+
+            # Dapatkan multiplier berdasarkan data aktivitas dari database
+            multiplier = activity_multipliers.get(activity.lower(), 1)  # Default ke 1 jika data tidak cocok
+            tdee = bmr * multiplier if isinstance(bmr, (int, float)) else "-"
+
+            # Isi data_dict dengan data pengguna
             data_dict = {
                 "height": height or "-",
                 "weight": weight or "-",
                 "bmi": round(bmi, 2) if isinstance(bmi, (int, float)) else "-",
+                "tdee": round(tdee, 2) if isinstance(tdee, (int, float)) else "-",
                 "bmr": round(bmr, 2) if isinstance(bmr, (int, float)) else "-",
                 "goal": goal or "-",
                 "activity": activity or "-"
             }
         else:
-           
+            # Pesan jika data tidak ada
             no_data_message = "Belum ada data tersedia saat ini. Silakan tambahkan data Anda melalui tombol di bawah ini:"
             add_userchar = url_for('add_userchar')  
 
         return render_template('user_dashboard.html', data=data_dict, data_exists=data_exists, no_data_message=no_data_message, add_userchar=add_userchar)
     
-    
     flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
     return redirect(url_for('login'))
+
 
 
 @app.route('/admin_dashboard')
@@ -114,20 +128,141 @@ def admin_dashboard():
 
 @app.route('/profile')
 def profile():
-    return "<h2>profile</h2>"
+    return render_template('profile.html')
 
 @app.route('/recomendation')
 def recomendation():
     return "<h2>recomendation</h2>"
 
-@app.route('/add_userchar')
+@app.route('/add_userchar', methods=['GET', 'POST'])
 def add_userchar():
-    return "<h2>profile</h2>"
+    if request.method == 'POST':
+        height = request.form['height']
+        weight = request.form['weight']
+        gender = request.form['gender']
+        age = request.form['age']
+        goal = request.form['goal']
+        activity = request.form['activity']
+        
+        userid = session.get('userid')
+        
+        if userid is None:
+            flash("Anda harus login terlebih dahulu")
+            return redirect(url_for('login'))
+
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            INSERT INTO usercharacteristics (userid, height, weight, gender, age, goal, activity)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (userid, height, weight, gender, age, goal, activity))
+        mysql.connection.commit()
+        cur.close()
+
+        flash("Data berhasil ditambahkan")
+        return redirect(url_for('user_dashboard'))
+
+    return render_template('userchar_add.html')
 
 
 @app.route('/plandiet')
 def plandiet():
-     return render_template('plandiet.html')
+     return render_template('plandiet.html',active_page='plandiet')
+
+@app.route('/uarticle')
+def uarticle():
+    if session.get('loggedin') and session.get('actor') == '2':
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM article ORDER BY created ASC")
+        tampilartikel = cur.fetchall()
+         # Ambil jumlah artikel per kategori
+        cur.execute("""
+            SELECT category, COUNT(*) as count 
+            FROM article 
+            GROUP BY category
+        """)
+        kategori_count = cur.fetchall()
+        
+        cur.close()
+        
+        # Mengubah kategori_count menjadi dictionary untuk kemudahan akses
+        jumlahkategori = {row[0]: row[1] for row in kategori_count}
+        
+        dataartikel = []
+        for row in tampilartikel:
+            first_sentence = row[2].split('.')[0] + '.' if '.' in row[2] else row[2]
+            dataartikel.append({
+                "id": row[0],
+                "title": row[1],
+                "first_sentence": first_sentence,
+                "created": row[3],
+                "author": row[5]
+            })
+
+        return render_template('uarticle.html', active_page='article', dataartikel=dataartikel, jumlahkategori=jumlahkategori)
+    else:
+        flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
+        return redirect(url_for('login'))
+
+    
+@app.route('/detail_article/<int:id>')
+def detail_article(id):
+    if session.get('loggedin') and session.get('actor') == '2':
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM article WHERE id = %s", (id,))
+        tampilartikel = cur.fetchone()
+        cur.execute("""
+            SELECT category, COUNT(*) as count 
+            FROM article 
+            GROUP BY category
+        """)
+        kategori_count = cur.fetchall()
+        
+        cur.close()
+        jumlahkategori = {row[0]: row[1] for row in kategori_count}
+        
+        
+        if tampilartikel:
+            return render_template('uarticle_detail.html', active_page='uarticle',  article=tampilartikel, jumlahkategori=jumlahkategori)
+        else:
+            flash('Artikel tidak ditemukan.', 'warning')
+            return redirect(url_for('uarticle'))
+    else:
+        flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
+        return redirect(url_for('login'))
+
+
+
+
+@app.route('/urecipe')
+def urecipe():
+    if session.get('loggedin') and session.get('actor') == '2':
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM recipe ORDER BY title ASC")
+        tampilresep = cur.fetchall()
+        cur.close()
+        return render_template('urecipe.html',active_page='urecipe', dataresep=tampilresep)
+    else:
+        flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
+        return redirect(url_for('login'))
+    
+@app.route('/detail_recipe/<int:id>')
+def detail_recipe(id):
+    if session.get('loggedin') and session.get('actor') == '2':
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM recipe WHERE id = %s", (id,))
+        resep_detail = cur.fetchone()
+        cur.close()
+
+        if resep_detail:
+            return render_template('urecipe_detail.html', active_page='urecipe', resep=resep_detail)
+        else:
+            flash('Resep tidak ditemukan.', 'warning')
+            return redirect(url_for('urecipe'))
+    else:
+        flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
+        return redirect(url_for('login'))
+
+
 
 @app.route('/login', methods=('GET', 'POST'))
 def login():
@@ -357,11 +492,12 @@ def add_article():
         title = request.form['title']
         content = request.form['content']
         category = request.form['category']
+        author = request.form['author']
 
         cur = mysql.connection.cursor()
         cur.execute(
-            "INSERT INTO article (title, content, created, category) VALUES (%s, %s, NOW(), %s)",
-            (title, content, category)
+            "INSERT INTO article (title, content, created, category, author) VALUES (%s, %s, NOW(), %s, %s)",
+            (title, content, category,author)
         )
         mysql.connection.commit()
         flash("Data berhasil ditambahkan")

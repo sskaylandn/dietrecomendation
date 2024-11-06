@@ -71,17 +71,17 @@
 			<div class="collapse navbar-collapse" id="navbarmain">
 				<ul class="navbar-nav ml-auto">
                     
-                        <li class="nav-item active"><a class="nav-link" href="{{ url_for('user_dashboard') }}">Home</a></li>
-                        <li class="nav-item {% if active_page == 'plandiet' %}active{% endif %}" ><a class="nav-link" href="{{ url_for('plandiet') }}">Perencanaan Diet</a></li>
-                        <li class="nav-item {% if active_page == 'urecipe' %}active{% endif %}"><a class="nav-link" href="{{ url_for('urecipe') }}">Resep Masakan</a></li>
-                        <li class="nav-item {% if active_page == 'uarticle' %}active{% endif %}"><a class="nav-link" href="{{ url_for('uarticle') }}">Hidup Bersih dan Sehat</a></li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="{{ url_for('profile') }}" id="dropdown05" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hello, {{session.email}} <i class="icofont-thin-down"></i></a>
-							<ul class="dropdown-menu" aria-labelledby="dropdown05">
-								<li><a class="dropdown-item" href="{{ url_for('profile') }}">Profile</a></li>
-								<li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
-							</ul>
-						</li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('user_dashboard') }}">Home</a></li>
+                    <li class="nav-item {% if active_page == 'plandiet' %}active{% endif %}" ><a class="nav-link" href="{{ url_for('plandiet') }}">Perencanaan Diet</a></li>
+                    <li class="nav-item {% if active_page == 'urecipe' %}active{% endif %}"><a class="nav-link" href="{{ url_for('urecipe') }}">Resep Masakan</a></li>
+                    <li class="nav-item {% if active_page == 'uarticle' %}active{% endif %}"><a class="nav-link" href="{{ url_for('uarticle') }}">Hidup Bersih dan Sehat</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="{{ url_for('profile') }}" id="dropdown05" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hello, {{session.email}} <i class="icofont-thin-down"></i></a>
+                        <ul class="dropdown-menu" aria-labelledby="dropdown05">
+                            <li><a class="dropdown-item" href="{{ url_for('profile') }}">Profile</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+                        </ul>
+                    </li>
                     
 					
 				</ul>
@@ -99,7 +99,7 @@
 				<div class="block">
 					<div class="divider mb-3"></div>
 					<h1 class="mb-3 mt-3">Hello, {{session.email}}</h1>
-					{% if data_exists %}
+					
 					<div class="container">
 						<div class="row">
 							<div class="col-lg-12">
@@ -110,7 +110,7 @@
 										</div>
 										<span>Kondisi Saat Ini :</span>
 										<h4 class="mb-3">TINGGI BADAN</h4>
-										<h3 class="mb-3">{{ data.height }} CM</h3>
+										<h3 class="mb-3"> CM</h3>
 									</div>
 					
 									<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
@@ -119,7 +119,7 @@
 										</div>
 										<span>Kondisi Saat Ini :</span>
 										<h4 class="mb-3">BERAT BADAN</h4>
-										<h3 class="mb-3">{{ data.weight }} KG</h3>
+										<h3 class="mb-3"> KG</h3>
 									</div>
 					
 									<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
@@ -128,16 +128,7 @@
 										</div>
 										<span>Kondisi Saat Ini :</span>
 										<h4 class="mb-3">BMI</h4>
-										<h3 class="mb-3">{{ data.bmi }}</h3>
-									</div>
-
-									<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
-										<div class="feature-icon mb-4">
-											<i class="icofont-female"></i>
-										</div>
-										<span>Kondisi Saat Ini :</span>
-										<h4 class="mb-3">TDEE</h4>
-										<h3 class="mb-3">{{ data.tdee }}</h3>
+										<h3 class="mb-3"></h3>
 									</div>
 					
 									<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
@@ -146,75 +137,21 @@
 										</div>
 										<span>Kondisi Saat Ini :</span>
 										<h4 class="mb-3">BMR</h4>
-										<h3 class="mb-3">{{ data.bmr }}</h3>
+										<h3 class="mb-3"></h3>
 									</div>
 					
-									
+									<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
+										<div class="feature-icon mb-4">
+											<i class="icofont-cycling"></i>
+										</div>
+										<span>Kondisi Saat Ini :</span>
+										<h4 class="mb-3">GOALS</h4>
+										<h3 class="mb-3"></h3>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-					{% else %}
-					<h4 class="mb-3">{{ no_data_message }}</h4>
-							<a href="{{ url_for('add_userchar') }}" class="btn btn-main btn-round-full mb-0">Isi Data Diri</a>
-						<br><br>
-						<div class="container">
-							<div class="row">
-								<div class="col-lg-12">
-									<div class="feature-block d-lg-flex">
-										<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
-											<div class="feature-icon mb-4">
-												<i class="icofont-fruits"></i>
-											</div>
-											<span>Kondisi Saat Ini :</span>
-											<h4 class="mb-3">TINGGI BADAN</h4>
-											<h3 class="mb-3">{{ data.height }}</h3>
-										</div>
-						
-										<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
-											<div class="feature-icon mb-4">
-												<i class="icofont-bathtub"></i>
-											</div>
-											<span>Kondisi Saat Ini :</span>
-											<h4 class="mb-3">BERAT BADAN</h4>
-											<h3 class="mb-3">{{ data.weight }}</h3>
-										</div>
-						
-										<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
-											<div class="feature-icon mb-4">
-												<i class="icofont-female"></i>
-											</div>
-											<span>Kondisi Saat Ini :</span>
-											<h4 class="mb-3">BMI</h4>
-											<h3 class="mb-3">{{ data.bmi }}</h3>
-										</div>
-
-										<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
-											<div class="feature-icon mb-4">
-												<i class="icofont-female"></i>
-											</div>
-											<span>Kondisi Saat Ini :</span>
-											<h4 class="mb-3">TDEE</h4>
-											<h3 class="mb-3">{{ data.tdee }}</h3>
-										</div>
-						
-										<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
-											<div class="feature-icon mb-4">
-												<i class="icofont-female"></i>
-											</div>
-											<span>Kondisi Saat Ini :</span>
-											<h4 class="mb-3">BMR</h4>
-											<h3 class="mb-3">{{ data.bmr }}</h3>
-										</div>
-						
-									</div>
-								</div>
-							</div>
-						</div>
-						
-					{% endif %}
-					
-					
 					
 				</div>
 				
@@ -222,7 +159,6 @@
 		</div>
 	</div>
 </section>
-
 
 
 <section class="section about">
