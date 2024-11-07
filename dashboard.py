@@ -70,11 +70,10 @@ def user_dashboard():
 
             # Kamus untuk faktor aktivitas
             activity_multipliers = {
-                'sedentary': 1.2,
-                'light': 1.375,
-                'moderate': 1.55,
-                'active': 1.725,
-                'veryactive': 1.9
+                'sedentary': 1.3,
+                'lowactive': 1.5,
+                'active': 1.7,
+                'veryactive': 2
             }
 
             # Dapatkan multiplier berdasarkan data aktivitas dari database
@@ -126,9 +125,49 @@ def admin_dashboard():
 
 
 
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 def profile():
-    return render_template('profile.html')
+    # Cek apakah ada userid di session
+    userid = session.get('userid')
+    if not userid:
+        flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
+        return redirect(url_for('login'))  # Jika tidak ada session userid, arahkan ke halaman login
+    
+    # Mengambil data pengguna dan karakteristiknya
+    cursor = mysql.connection.cursor()
+    
+    # Ambil data dari tabel user berdasarkan userid
+    cursor.execute("SELECT * FROM user WHERE userid = %s", [userid])
+    user_data = cursor.fetchone()
+    
+    # Ambil data dari tabel usercharacteristics berdasarkan userid
+    cursor.execute("SELECT * FROM usercharacteristics WHERE userid = %s", [userid])
+    characteristic_data = cursor.fetchone()
+    
+    # Jika request method POST, perbarui data
+    if request.method == 'POST':
+        name = request.form.get('name')
+        height = request.form.get('height')
+        weight = request.form.get('weight')
+        gender = request.form.get('gender')
+        age = request.form.get('age')
+        goal = request.form.get('goal')
+        activity = request.form.get('activity')
+
+        # Update tabel user
+        cursor.execute("""UPDATE user SET name = %s WHERE userid = %s""", (name, userid))
+
+        # Update tabel usercharacteristics
+        cursor.execute("""UPDATE usercharacteristics SET height = %s, weight = %s, gender = %s, age = %s, goal = %s, activity = %s WHERE userid = %s""",
+                       (height, weight, gender, age, goal, activity, userid))
+        
+        mysql.connection.commit()  # Commit perubahan ke database
+        flash('Profile updated successfully!', 'success')  # Flash pesan sukses
+        return redirect(url_for('profile'))  # Redirect kembali ke halaman profil
+
+    # Render halaman profil dengan data pengguna dan karakteristik
+    return render_template('profile.html', user=user_data, user_characteristics=characteristic_data)
+
 
 @app.route('/recomendation')
 def recomendation():
