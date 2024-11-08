@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <!-- Basic Page Needs
+  ================================================== -->
+  <meta charset="utf-8">
+  <title>Pola Hidup Sehat</title>
+
+  <!-- Mobile Specific Metas
+  ================================================== -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="Health Care Medical Html5 Template">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="author" content="Themefisher">
+  <meta name="generator" content="Themefisher Novena HTML Template v1.0">
+  
+  <!-- theme meta -->
+  <meta name="theme-name" content="novena" />
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" type="image/x-icon"  href="{{ url_for('static', filename='/images/favicon.png') }}" />
+
+  <!-- 
+  Essential stylesheets
+  =====================================-->
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/bootstrap/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/icofont/icofont.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/slick-carousel/slick/slick.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/slick-carousel/slick/slick-theme.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body id="top">
+
+<header>
+	<div class="header-top-bar">
+		<div class="container">
+			<div class="row align-items-center">
+				<div class="col-lg-6">
+					<ul class="top-bar-info list-inline-item pl-0 mb-0">
+						<li class="list-inline-item"><a href="mailto:support@gmail.com"><i ></i></a></li>
+						<li class="list-inline-item"><i ></i> </li>
+					</ul>
+				</div>
+				<div class="col-lg-6">
+					<div class="text-lg-right top-right-bar mt-2 mt-lg-0">
+						<a href="tel:+23-345-67890">
+							<span></span>
+							<span class="h4"></span>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<nav class="navbar navbar-expand-lg navigation" id="navbar">
+		<div class="container">
+			<a class="navbar-brand" href="index.html">
+				<img src="images/logo.png" alt="" class="img-fluid">
+			</a>
+
+			<button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarmain"
+				aria-controls="navbarmain" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="icofont-navigation-menu"></span>
+			</button>
+
+			<div class="collapse navbar-collapse" id="navbarmain">
+				<ul class="navbar-nav ml-auto">
+                    
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('user_dashboard') }}">Home</a></li>
+          <li class="nav-item {% if active_page == 'plandiet' %}active{% endif %}" ><a class="nav-link" href="{{ url_for('plandiet') }}">Perencanaan Diet</a></li>
+          <li class="nav-item {% if active_page == 'tracker' %}active{% endif %}"><a class="nav-link" href="{{ url_for('tracker') }}">Tracker Diet</a></li>
+          <li class="nav-item {% if active_page == 'urecipe' %}active{% endif %}"><a class="nav-link" href="{{ url_for('urecipe') }}">Resep Masakan</a></li>
+          <li class="nav-item {% if active_page == 'uarticle' %}active{% endif %}"><a class="nav-link" href="{{ url_for('uarticle') }}">Hidup Bersih dan Sehat</a></li>
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="{{ url_for('profile') }}" id="dropdown05" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hello, {{session.email}} <i class="icofont-thin-down"></i></a>
+              <ul class="dropdown-menu" aria-labelledby="dropdown05">
+                  <li><a class="dropdown-item" href="{{ url_for('profile') }}">Profile</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+              </ul>
+          </li>
+                    
+					
+				</ul>
+			</div>
+		</div>
+	</nav>
+</header>
+
+
+<!-- Slider Start -->
+<section class="page-title bg-1">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="block text-center">
+            <span class="text-white">Hello, {{session.email}} </span>
+            <h1 class="text-capitalize mb-4 text-lg">Yuk, lihat progressmu</h1>
+  
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- contact form start -->
+  
+  <section class="contact-form-wrap section">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-6">
+          <div class="section-title text-center">
+            <h3>Yuk lihat progress {{session.email}} sejauh ini:</h3>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                  <strong>{{message}}</strong> 
+                </div>
+              {% endfor %}
+            {% endif %}
+            {% endwith %}
+            <div class="divider mx-auto my-4"></div>
+            <p class="mb-5"></p>
+          </div>
+        </div>
+      </div>
+      
+            
+     
+      <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-8 col-md-6">
+                            <div class="doctor-img-block">
+                            <!--Tabel Histori-->  
+                            <h5>Histori Progress:</h5>
+                            <div class="divider my-4"></div>
+                            <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">No</th>
+                                    <th scope="col">Tanggal</th>
+                                    <th scope="col">Berat</th>
+                                    <th scope="col">Perut</th>
+                                    <th scope="col">Pinggang</th>
+                                    <th scope="col">Paha</th>
+                                    <th scope="col">Lengan</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in tracker_data %}
+                                    <tr>
+                                        <th scope="row">{{ loop.index + (page - 1) * 5 }}</th>
+                                        <td>{{row[2]}} </td>
+                                        <td>{{row[3]}} kg</td>
+                                        <td>{{row[4]}} cm</td>
+                                        <td>{{row[5]}} cm</td>
+                                        <td>{{row[6]}} cm</td>
+                                        <td>{{row[7]}} cm</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                              </table>
+                              <nav aria-label="Page navigation">
+                                <ul class="pagination">
+                                    {% if page > 1 %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ url_for('tracker', page=page - 1) }}">
+                                                <i class="fas fa-chevron-left"></i> 
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    {% for p in range(1, total_pages + 1) %}
+                                        <li class="page-item {% if p == page %}active{% endif %}">
+                                            <a class="page-link" href="{{ url_for('tracker', page=p) }}">{{ p }}</a>
+                                        </li>
+                                    {% endfor %}
+                                    {% if page < total_pages %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ url_for('tracker', page=page + 1) }}">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                            <br><br>
+
+                            {% if weight_difference is not none %}
+                            <h5>Besaran Progress:</h5>
+                            <div class="divider my-4"></div>
+
+                            
+                            <h6>Berat Badan : 
+                              {% if weight_difference > 0 %}
+                                Penurunan {{ weight_difference }} kg
+                              {% elif weight_difference < 0 %}
+                                Kenaikan {{ weight_difference|abs }} kg
+                              {% else %}
+                                Tidak ada perubahan
+                              {% endif %}
+                            </h6>
+                            {% endif %}
+
+                            {% if belly_difference is not none %}
+                            <h6>Lingkar Perut :
+                              {% if belly_difference > 0 %}
+                                Penurunan {{ belly_difference }} cm
+                              {% elif belly_difference < 0 %}
+                                Kenaikan {{ belly_difference|abs }} cm
+                              {% else %}
+                                Tidak ada perubahan
+                              {% endif %}
+                            </h6>
+                            {% endif %}
+
+                            {% if waist_difference is not none %}
+                            <h6>Lingkar Pinggang :
+                              {% if waist_difference > 0 %}
+                                Penurunan {{ waist_difference }} cm
+                              {% elif waist_difference < 0 %}
+                                Kenaikan {{ waist_difference|abs }} cm
+                              {% else %}
+                                Tidak ada perubahan
+                              {% endif %}
+                            </h6>
+                            {% endif %}
+
+                            {% if thigh_difference is not none %}
+                            <h6>Lingkar Paha :
+                              {% if thigh_difference > 0 %}
+                                Penurunan {{ thigh_difference }} cm
+                              {% elif thigh_difference < 0 %}
+                                Kenaikan {{ thigh_difference|abs }} cm
+                              {% else %}
+                                Tidak ada perubahan
+                              {% endif %}
+                            </h6>
+                            {% endif %}
+
+                            {% if arm_difference is not none %}
+                            <h6>Lingkar Lengan :
+                              {% if arm_difference > 0 %}
+                                Penurunan {{ arm_difference }} cm
+                              {% elif arm_difference < 0 %}
+                                Kenaikan {{ arm_difference|abs }} cm
+                              {% else %}
+                                Tidak ada perubahan
+                              {% endif %}
+                            </h6>
+                            {% endif %}
+
+                            <!--Grafik Progrss-->
+                            <br><br>
+                            <h5>Grafik Progress:</h5>
+                            <div class="divider my-4"></div>
+
+                            <h6>Berat Badan:</h6>
+                            <div class="divider my-4"></div>
+                            <canvas id="weightChart" width="900" height="400"></canvas>
+                            <script>
+                                var ctx = document.getElementById("weightChart").getContext("2d");
+                                var weightChart = new Chart(ctx, {
+                                    type: "line",
+                                    data: {
+                                        labels: {{ labels|safe }},
+                                        datasets: [{
+                                            label: "Berat Badan (dalam kg)",
+                                            data: {{ weight_values|safe }},
+                                            fill: false,
+                                            borderColor: "rgb(75,192,192)",
+                                            lineTension: 0.5
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: false
+                                    }
+                                });
+                            </script>
+
+
+                            <br><br>
+                            <h6>Lingkar Badan:</h6>
+                            <div class="divider my-4"></div>
+                            <canvas id="bodyChart" width="900" height="400"></canvas>
+                            <script>
+                                var ctx2 = document.getElementById("bodyChart").getContext("2d");
+                                var bodyChart = new Chart(ctx2, {
+                                    type: "line",
+                                    data: {
+                                        labels: {{ labels|safe }},
+                                        datasets: [
+                                            {
+                                                label: "Perut (dalam cm)",
+                                                data: {{ belly_values|safe }},
+                                                fill: false,
+                                                borderColor: "rgb(255,99,132)",
+                                                lineTension: 0.5
+                                            },
+                                            {
+                                                label: "Pinggang (dalam cm)",
+                                                data: {{ waist_values|safe }},
+                                                fill: false,
+                                                borderColor: "rgb(54,162,235)",
+                                                lineTension: 0.5
+                                            },
+                                            {
+                                                label: "Paha (dalam cm)",
+                                                data: {{ thigh_values|safe }},
+                                                fill: false,
+                                                borderColor: "rgb(255,159,64)",
+                                                lineTension: 0.5
+                                            },
+                                            {
+                                                label: "Lengan (dalam cm)",
+                                                data: {{ arm_values|safe }},
+                                                fill: false,
+                                                borderColor: "rgb(75,192,192)",
+                                                lineTension: 0.5
+                                            }
+                                        ]
+                                    },
+                                    options: {
+                                        responsive: false
+                                    }
+                                });
+                            </script>
+                        </div>
+                        </div>
+            
+                        <div class="col-lg-4 col-md-6 ">
+                            <div class="doctor-details mt-4 mt-lg-0 ">
+                                <h5>Check-In Progress:</h5>
+                                <div class="divider my-4"></div>
+                                <form method="post" action="{{url_for('tracker')}}">
+                                
+                                <div class="row justify-content">
+                                    <div class="col-12 col-md-3 label-col">
+                                      <h6>Tanggal</h6>
+                                    </div>
+                                    <div class="col-12 col-md-4  form-group text-center  input-col">
+                                      <input name="datesubmit" id="datesubmit" type="date"  class="form-control" required >
+                                    </div>
+                                  </div>
+                                
+
+                                <div class="row justify-content">
+                                    <div class="col-12 col-md-3 label-col">
+                                      <h6>Berat Badan (kg)</h6>
+                                    </div>
+                                    <div class="col-12 col-md-4  form-group text-center  input-col">
+                                      <input name="weight" id="weight" type="number" min="0" step="0.01" class="form-control" placeholder="Ex:70.2">
+                                    </div>
+                                </div>
+                                    
+
+                                <div class="row justify-content">
+                                    <div class="col-12 col-md-3 label-col">
+                                      <h6>Lingkar Perut (cm)</h6>
+                                    </div>
+                                    <div class="col-12 col-md-4  form-group text-center  input-col">
+                                      <input name="belly" id="belly" type="number" min="0" step="0.01" class="form-control" placeholder="Ex:90.1" >
+                                    </div>
+                                  </div>
+                      
+                                  <div class="row justify-content">
+                                    <div class="col-12 col-md-3 label-col">
+                                      <h6>Lingkar Pinggang (cm)</h6>
+                                    </div>
+                                    <div class="col-12 col-md-4  form-group text-center  input-col">
+                                      <input name="waist" id="waist" type="number" min="0" step="0.01" class="form-control" placeholder="Ex:60.2" >
+                                    </div>
+                                  </div>
+                      
+                                  <div class="row justify-content">
+                                    <div class="col-12 col-md-3 label-col">
+                                      <h6>Lingkar Paha (cm)</h6>
+                                    </div>
+                                    <div class="col-12 col-md-4  form-group text-center  input-col">
+                                      <input name="thigh" id="thigh" type="number" min="0" step="0.01" class="form-control" placeholder="Ex:75.5" >
+                                    </div>
+                                  </div>
+                      
+                              
+                                  <div class="row justify-content">
+                                    <div class="col-12 col-md-3 label-col">
+                                      <h6>Lingkar Lengan (cm)</h6>
+                                    </div>
+                                    <div class="col-12 col-md-4  form-group text-center  input-col">
+                                      <input name="arm" id="arm" type="number" min="0" min="0" step="0.01" class="form-control" placeholder="Ex:30.7" >
+                                    </div>
+                                  </div>
+                      
+                                  <div class="row justify-content">
+                                    <div class="col-lg-4 text-center">
+                                      <div class="form-group">
+                                        <input class="btn btn-main btn-round-full" name="submit" type="submit" value="Simpan Data"></input>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                </form> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+<!-- footer Start -->
+<footer class="footer section gray-bg">
+	<div class="container">
+        <div class="row">
+        </div>
+    
+        <div class="footer-btm py-4 mt-5">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-lg-12 text-center">
+                    <div class="copyright">
+                        Pola Hidup Sehat - Kayla Shareta Andien
+                    </div>
+                </div>
+            </div>    
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4">
+                <a class="backtop scroll-top-to reveal" href="#top">
+                    <i class="icofont-long-arrow-up"></i>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</footer>
+
+
+
+
+   
+
+    <!-- 
+    Essential Scripts
+    =====================================-->
+    <script src="plugins/jquery/jquery.js"></script>
+    <script src="plugins/bootstrap/bootstrap.min.js"></script>
+    <script src="plugins/slick-carousel/slick/slick.min.js"></script>
+    <script src="plugins/shuffle/shuffle.min.js"></script>
+
+    <!-- Google Map -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAkeLMlsiwzp6b3Gnaxd86lvakimwGA6UA"></script>
+    <script src="plugins/google-map/gmap.js"></script>
+    
+    <script src="js/script.js"></script>
+
+  </body>
+  </html>

@@ -71,8 +71,9 @@
 			<div class="collapse navbar-collapse" id="navbarmain">
 				<ul class="navbar-nav ml-auto">
                     
-                    <li class="nav-item active"><a class="nav-link" href="{{ url_for('user_dashboard') }}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('user_dashboard') }}">Home</a></li>
                     <li class="nav-item {% if active_page == 'plandiet' %}active{% endif %}" ><a class="nav-link" href="{{ url_for('plandiet') }}">Perencanaan Diet</a></li>
+                    <li class="nav-item {% if active_page == 'urecipe' %}active{% endif %}"><a class="nav-link" href="{{ url_for('tracker') }}">Tracker Diet</a></li>
                     <li class="nav-item {% if active_page == 'urecipe' %}active{% endif %}"><a class="nav-link" href="{{ url_for('urecipe') }}">Resep Masakan</a></li>
                     <li class="nav-item {% if active_page == 'uarticle' %}active{% endif %}"><a class="nav-link" href="{{ url_for('uarticle') }}">Hidup Bersih dan Sehat</a></li>
                     <li class="nav-item dropdown">
@@ -136,68 +137,180 @@
             <div class="row justify-content-center">
               <div class="col-lg-4 text-center">
                 <div class="form-group">
-                  <input name="height" id="height" type="number" step="0.01" class="form-control" placeholder="Masukkan Tinggi Badan Anda (Contoh : 165.2)" required>
+                  
                 </div>
               </div>
             </div>
 
             <div class="row justify-content-center">
-                <div class="col-lg-4 text-center">
-                  <div class="form-group">
-                    <input name="weight" id="weight" type="number" step="0.01" class="form-control" placeholder="Masukkan Berat Badan Anda (Contoh : 70.2)" required>
-                  </div>
-                </div>
+              <div class="col-12 col-md-3 label-col">
+                <h6>Tinggi Badan (cm)</h6>
+              </div>
+              <div class="col-12 col-md-4  form-group text-center  input-col">
+                <input name="height" id="height" type="number" min="0" step="0.01" class="form-control" placeholder="(Contoh : 165.2)" required>
+              </div>
+              <div class="col-12 col-md-3 span-col">
+                <span id="passwordHelpInline" class="form-text">
+                  Masukkan Tinggi Badan Saat Ini
+                </span>
+              </div>
             </div>
 
             <div class="row justify-content-center">
-                <div class="col-lg-4">
-                    <div class="form-group text-center">
-                        <select name="gender" id="gender" class="form-control mt-2" required>
-                            <option value="" disabled selected>Pilih Jenis Kelamin</option>
-                            <option value="wanita">Wanita</option>
-                            <option value="pria">Pria</option>
-                        </select>
-                    </div>
-                </div>
+              <div class="col-12 col-md-3 label-col">
+                <h6>Berat Badan (kg)</h6>
+              </div>
+              <div class="col-12 col-md-4  form-group text-center  input-col">
+                <input name="weight" id="weight" type="number" min="0" step="0.01" class="form-control" placeholder="(Contoh : 70.2)" required>
+              </div>
+              <div class="col-12 col-md-3 span-col">
+                <span id="passwordHelpInline" class="form-text">
+                  Masukkan Berat Badan Saat Ini
+                </span>
+              </div>
+            </div>
+
+           
+
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-3 label-col">
+                <h6>Jenis Kelamin</h6>
+              </div>
+              <div class="col-12 col-md-4  form-group text-center  input-col">
+                <select name="gender" id="gender" class="form-control mt-2" required>
+                  <option value="" disabled selected>Jenis Kelamin Anda</option>
+                  <option value="wanita">Wanita</option>
+                  <option value="pria">Pria</option>
+              </select>
+              </div>
+              <div class="col-12 col-md-3 span-col">
+                <span id="passwordHelpInline" class="form-text">
+                  Masukkan Berat Badan Saat Ini
+                </span>
+              </div>
+            </div>
+
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-3 label-col">
+                <h6>Umur (tahun)</h6>
+              </div>
+              <div class="col-12 col-md-4  form-group text-center  input-col">
+                <input name="age" id="age" type="number" min="0"  class="form-control" placeholder="(Contoh : 25)" required>
+              </div>
+              <div class="col-12 col-md-3 span-col">
+                <span id="passwordHelpInline" class="form-text">
+                  Masukkan Umur Saat Ini
+                </span>
+              </div>
             </div>
             
-            
 
             <div class="row justify-content-center">
-                <div class="col-lg-4 text-center">
-                  <div class="form-group">
-                    <input name="age" id="age" type="number" step="0.01" class="form-control" placeholder="Masukkan Umur Anda (Contoh : 25)" required>
-                  </div>
-                </div>
+              <div class="col-12 col-md-3 label-col">
+                <h6>Goals</h6>
+              </div>
+              <div class="col-12 col-md-4  form-group text-center  input-col">
+                <select name="goal" id="goal" class="form-control mt-2" required>
+                  <option value="" disabled selected>Tujuan Pola Hidup Sehat</option>
+                  <option value="lose">Mengurangi Berat Badan</option>
+                  <option value="maintian">Menjaga Berat Badan</option>
+                  <option value="gain">Menambah Berat Badan</option>
+              </select>
+              </div>
+              <div class="col-12 col-md-3 span-col">
+                <span id="passwordHelpInline" class="form-text">
+                  Masukkan Tujuan Pola Hidup Anda
+                </span>
+              </div>
             </div>
 
             <div class="row justify-content-center">
-                <div class="col-lg-4">
-                    <div class="form-group text-center">
-                        <select name="goal" id="goal" class="form-control mt-2" required>
-                            <option value="" disabled selected>Tujuan Pola Hidup Sehat</option>
-                            <option value="lose">Mengurangi Berat Badan</option>
-                            <option value="maintian">Menjaga Berat Badan</option>
-                            <option value="gain">Menambah Berat Badan</option>
-                        </select>
-                    </div>
-                </div>
+              <div class="col-12 col-md-3 label-col">
+                <h6>Aktivitas Harian</h6>
+              </div>
+              <div class="col-12 col-md-4  form-group text-center  input-col">
+                <select name="activity" id="activity" class="form-control mt-2" required>
+                  <option value="" disabled selected>Aktivitas Fisik Sehari-hari</option>
+                  <option value="sedentary">Aktivitas Ringan Sehari-hari</option>
+                  <option value="lowactive">30-60 Menit Aktivitas Sedang</option>
+                  <option value="active">> 60 Menit Aktivitas Sedang</option>
+                  <option value="veryactive">>120 Menit Aktivitas Sedang</option>
+              </select>
+              </div>
+              <div class="col-12 col-md-3 span-col">
+                <span id="passwordHelpInline" class="form-text">
+                  Masukkan Aktivitas Fisik Harian Anda
+                </span>
+              </div>
             </div>
 
             <div class="row justify-content-center">
-                <div class="col-lg-4">
-                    <div class="form-group text-center">
-                        <select name="activity" id="activity" class="form-control mt-2" required>
-                            <option value="" disabled selected>Aktivitas Fisik Sehari-hari</option>
-                            <option value="sedentary">Aktivitas Ringan Sehari-hari</option>
-                            <option value="lowactive">30-60 Menit Aktivitas Sedang</option>
-                            <option value="active">> 60 Menit Aktivitas Sedang</option>
-                            <option value="veryactive">>120 Menit Aktivitas Sedang</option>
-                        </select>
-                    </div>
+              <div class="col-lg-4 text-center">
+                <div class="form-group">
+                  <br>
+                  <span>(Data di bawah Opsional, tidak harus diisi)</span>
+                  <br>
                 </div>
+              </div>
+          </div>
+
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-3 label-col">
+                <h6>Lingkar Perut (cm)</h6>
+              </div>
+              <div class="col-12 col-md-4  form-group text-center  input-col">
+                <input name="belly" id="belly" type="number" min="0" step="0.01" class="form-control" placeholder="(Contoh : 80.2)" >
+              </div>
+              <div class="col-12 col-md-3 span-col">
+                <span id="passwordHelpInline" class="form-text">
+                  Masukkan Lingkar Perut Anda
+                </span>
+              </div>
             </div>
-            
+
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-3 label-col">
+                <h6>Lingkar Pinggang (cm)</h6>
+              </div>
+              <div class="col-12 col-md-4  form-group text-center  input-col">
+                <input name="waist" id="waist" type="number" min="0" step="0.01" class="form-control" placeholder="(Contoh : 80.2)" >
+              </div>
+              <div class="col-12 col-md-3 span-col">
+                <span id="passwordHelpInline" class="form-text">
+                  Masukkan Lingkar Pinggang Anda
+                </span>
+              </div>
+            </div>
+
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-3 label-col">
+                <h6>Lingkar Paha (cm)</h6>
+              </div>
+              <div class="col-12 col-md-4  form-group text-center  input-col">
+                <input name="thigh" id="thigh" type="number" min="0" step="0.01" class="form-control" placeholder="(Contoh : 80.2)" >
+              </div>
+              <div class="col-12 col-md-3 span-col">
+                <span id="passwordHelpInline" class="form-text">
+                  Masukkan Lingkar Paha Anda
+                </span>
+              </div>
+            </div>
+
+        
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-3 label-col">
+                <h6>Lingkar Lengan (cm)</h6>
+              </div>
+              <div class="col-12 col-md-4  form-group text-center  input-col">
+                <input name="arm" id="arm" type="number" min="0" min="0" step="0.01" class="form-control" placeholder="(Contoh : 80.2)" >
+              </div>
+              <div class="col-12 col-md-3 span-col">
+                <span id="passwordHelpInline" class="form-text">
+                  Masukkan Lingkar Lengan Anda
+                </span>
+              </div>
+            </div>
+
             <div class="row justify-content-center">
               <div class="col-lg-4 text-center">
                 <div class="form-group">

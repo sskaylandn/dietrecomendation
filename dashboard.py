@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from flask_mysqldb import MySQL
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from flask_ckeditor import CKEditor
+from datetime import datetime
 import os
+import json
 
 app = Flask(__name__)
 
@@ -37,7 +39,7 @@ def index():
 def user_dashboard():
     if session.get('loggedin') and session.get('actor') == '2': 
         userid = session.get('userid')  
-        
+
         cur = mysql.connection.cursor()
         cur.execute("SELECT height, weight, gender, age, goal, activity FROM usercharacteristics WHERE userid = %s", (userid,))
         user_data = cur.fetchone()  
@@ -46,8 +48,17 @@ def user_dashboard():
         no_data_message = ""
         add_userchar = ""
 
+        cursor = mysql.connection.cursor()
+        cursor.execute("SELECT datesubmit, weight FROM tracker WHERE userid = %s ORDER BY datesubmit ASC", [userid])
+        weightdata = cursor.fetchall()
+
+        # Siapkan data untuk grafik berat badan
+        labels = [row[0].strftime('%d-%m-%Y') for row in weightdata]   # Mengambil tanggal dan memformatnya
+        weight_values = [row[1] for row in weightdata]  # Mengambil berat badan dari data
+
         data_exists = bool(user_data)
         data_dict = {}
+
         if data_exists:
             height = user_data[0]
             weight = user_data[1]
@@ -80,6 +91,14 @@ def user_dashboard():
             multiplier = activity_multipliers.get(activity.lower(), 1)  # Default ke 1 jika data tidak cocok
             tdee = bmr * multiplier if isinstance(bmr, (int, float)) else "-"
 
+            # Hitung selisih berat badan antara tanggal pertama dan terakhir jika ada data
+            if weightdata:
+                oldest_date = weightdata[0][0].strftime('%d-%m-%Y')  # Tanggal pertama
+                latest_date = weightdata[-1][0].strftime('%d-%m-%Y')  # Tanggal terakhir
+                weight_difference = round(weightdata[-1][1] - weightdata[0][1], 2)  # Selisih berat badan
+            else:
+                oldest_date = latest_date = weight_difference = None
+
             # Isi data_dict dengan data pengguna
             data_dict = {
                 "height": height or "-",
@@ -88,17 +107,31 @@ def user_dashboard():
                 "tdee": round(tdee, 2) if isinstance(tdee, (int, float)) else "-",
                 "bmr": round(bmr, 2) if isinstance(bmr, (int, float)) else "-",
                 "goal": goal or "-",
-                "activity": activity or "-"
+                "activity": activity or "-",
             }
+
+            # Hanya masukkan `weight_difference` jika ada data di tracker
+            if weightdata:
+                data_dict["weight_difference"] = weight_difference
+                data_dict["oldest_date"] = oldest_date
+                data_dict["latest_date"] = latest_date
+
         else:
             # Pesan jika data tidak ada
             no_data_message = "Belum ada data tersedia saat ini. Silakan tambahkan data Anda melalui tombol di bawah ini:"
             add_userchar = url_for('add_userchar')  
 
-        return render_template('user_dashboard.html', data=data_dict, data_exists=data_exists, no_data_message=no_data_message, add_userchar=add_userchar)
+        return render_template('user_dashboard.html', 
+                             data=data_dict, 
+                             data_exists=data_exists, 
+                             no_data_message=no_data_message, 
+                             add_userchar=add_userchar, 
+                             labels=labels, 
+                             weight_values=weight_values)
     
     flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
     return redirect(url_for('login'))
+
 
 
 
@@ -148,7 +181,6 @@ def profile():
     if request.method == 'POST':
         name = request.form.get('name')
         height = request.form.get('height')
-        weight = request.form.get('weight')
         gender = request.form.get('gender')
         age = request.form.get('age')
         goal = request.form.get('goal')
@@ -158,8 +190,8 @@ def profile():
         cursor.execute("""UPDATE user SET name = %s WHERE userid = %s""", (name, userid))
 
         # Update tabel usercharacteristics
-        cursor.execute("""UPDATE usercharacteristics SET height = %s, weight = %s, gender = %s, age = %s, goal = %s, activity = %s WHERE userid = %s""",
-                       (height, weight, gender, age, goal, activity, userid))
+        cursor.execute("""UPDATE usercharacteristics SET height = %s,  gender = %s, age = %s, goal = %s, activity = %s WHERE userid = %s""",
+                       (height, gender, age, goal, activity, userid))
         
         mysql.connection.commit()  # Commit perubahan ke database
         flash('Profile updated successfully!', 'success')  # Flash pesan sukses
@@ -173,9 +205,12 @@ def profile():
 def recomendation():
     return "<h2>recomendation</h2>"
 
+
+
 @app.route('/add_userchar', methods=['GET', 'POST'])
 def add_userchar():
     if request.method == 'POST':
+        # Data for usercharacteristics table
         height = request.form['height']
         weight = request.form['weight']
         gender = request.form['gender']
@@ -183,49 +218,228 @@ def add_userchar():
         goal = request.form['goal']
         activity = request.form['activity']
         
-        userid = session.get('userid')
+        # Data for tracker table
+        belly = request.form['belly']
+        waist = request.form['waist']
+        thigh = request.form['thigh']
+        arm = request.form['arm']
         
+        # Set datesubmit to current date in YYYY-MM-DD format
+        datesubmit = datetime.now().date()  # Only date without time
+
+       
+
+        # Check if user is logged in
+        userid = session.get('userid')
         if userid is None:
             flash("Anda harus login terlebih dahulu")
             return redirect(url_for('login'))
 
         cur = mysql.connection.cursor()
+        
+        # Insert data into usercharacteristics table
         cur.execute("""
             INSERT INTO usercharacteristics (userid, height, weight, gender, age, goal, activity)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
         """, (userid, height, weight, gender, age, goal, activity))
+        
+        # Insert data into tracker table
+        cur.execute("""
+            INSERT INTO tracker (userid, weight, belly, waist, thigh, arm, datesubmit)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (userid, weight, belly, waist, thigh, arm, datesubmit))
+
+        # Commit both inserts to the database
         mysql.connection.commit()
+        
+        # Close the cursor
         cur.close()
 
-        flash("Data berhasil ditambahkan")
+        flash("Data berhasil ditambahkan ke kedua tabel")
         return redirect(url_for('user_dashboard'))
 
     return render_template('userchar_add.html')
+
 
 
 @app.route('/plandiet')
 def plandiet():
      return render_template('plandiet.html',active_page='plandiet')
 
+@app.route('/tracker', methods=['GET', 'POST'])
+def tracker():
+    # Cek apakah ada userid di session
+    userid = session.get('userid')
+    if not userid:
+        flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
+        return redirect(url_for('login'))  # Jika tidak ada session userid, arahkan ke halaman login
+
+    cursor = mysql.connection.cursor()
+
+    # Ambil data untuk grafik berat badan
+    cursor.execute("SELECT datesubmit, weight FROM tracker WHERE userid = %s ORDER BY datesubmit ASC", [userid])
+    weightdata = cursor.fetchall()
+
+    # Siapkan data untuk grafik berat badan
+    labels = [row[0].strftime('%d-%m-%Y') for row in weightdata]   # Mengambil tanggal dan memformatnya
+    weight_values = [row[1] for row in weightdata]  # Mengambil berat badan dari data
+
+    # Ambil data untuk grafik lingkar tubuh (belly, waist, thigh, arm)
+    cursor.execute("""
+        SELECT datesubmit, belly, waist, thigh, arm 
+        FROM tracker 
+        WHERE userid = %s 
+        ORDER BY datesubmit ASC
+    """, [userid])
+    body_data = cursor.fetchall()
+
+    # Siapkan data untuk grafik lingkar tubuh
+    belly_values = [row[1] for row in body_data]
+    waist_values = [row[2] for row in body_data]
+    thigh_values = [row[3] for row in body_data]
+    arm_values = [row[4] for row in body_data]
+
+    # Menghitung selisih antara data terbaru dan terlama
+    if weightdata:
+        weight_difference = round(weight_values[0] - weight_values[-1], 2)
+        belly_difference = round(belly_values[0] - belly_values[-1], 2)
+        waist_difference = round(waist_values[0] - waist_values[-1], 2)
+        thigh_difference = round(thigh_values[0] - thigh_values[-1], 2)
+        arm_difference = round(arm_values[0] - arm_values[-1], 2)
+    else:
+        weight_difference = belly_difference = waist_difference = thigh_difference = arm_difference = None
+
+    # Mengambil nomor halaman dari parameter query atau default ke 1
+    page = request.args.get('page', 1, type=int)
+    per_page = 5  # Jumlah data per halaman
+    offset = (page - 1) * per_page  # Tentukan data awal untuk halaman saat ini
+
+    # Ambil data dengan paginasi dari tabel tracker berdasarkan userid
+    cursor.execute("SELECT * FROM tracker WHERE userid = %s ORDER BY datesubmit DESC LIMIT %s OFFSET %s", (userid, per_page, offset))
+    tracker_data = cursor.fetchall()
+
+    # Menghitung total data untuk menentukan jumlah halaman
+    cursor.execute("SELECT COUNT(*) FROM tracker WHERE userid = %s", [userid])
+    total_data = cursor.fetchone()[0]
+    total_pages = (total_data + per_page - 1) // per_page  # Pembulatan ke atas untuk jumlah halaman
+
+    # Menangani POST request untuk menambah data baru
+    if request.method == 'POST':
+        datesubmit = request.form.get('datesubmit')
+        
+        # Cek apakah sudah ada data dengan tanggal yang sama di database
+        cursor.execute("SELECT * FROM tracker WHERE userid = %s AND datesubmit = %s", [userid, datesubmit])
+        existing_data = cursor.fetchone()
+
+        if existing_data:
+            flash(f"Data untuk tanggal {datesubmit} sudah tersedia.", 'danger')
+            return redirect(url_for('tracker'))  # Mengarahkan kembali ke halaman tracker
+
+        # Jika tidak ada data untuk tanggal tersebut, simpan data baru
+        weight = request.form.get('weight')
+        belly = request.form.get('belly')
+        waist = request.form.get('waist')
+        thigh = request.form.get('thigh')
+        arm = request.form.get('arm')
+
+        # Insert data baru ke dalam tabel
+        cursor.execute(""" 
+            INSERT INTO tracker (userid, weight, belly, waist, thigh, arm, datesubmit)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (userid, weight, belly, waist, thigh, arm, datesubmit))
+
+        mysql.connection.commit()  # Commit perubahan ke database
+        flash('Data tracker berhasil diperbarui!', 'success')  # Flash pesan sukses
+        return redirect(url_for('tracker'))  # Redirect kembali ke halaman tracker
+
+    # Jika tidak ada POST request, hanya tampilkan data
+    return render_template(
+        'tracker.html', 
+        active_page='tracker', 
+        tracker_data=tracker_data, 
+        page=page, 
+        total_pages=total_pages, 
+        labels=labels, 
+        weight_values=weight_values, 
+        belly_values=belly_values, 
+        waist_values=waist_values, 
+        thigh_values=thigh_values, 
+        arm_values=arm_values,
+        weight_difference=weight_difference,
+        belly_difference=belly_difference,
+        waist_difference=waist_difference,
+        thigh_difference=thigh_difference,
+        arm_difference=arm_difference
+    )
+
+
+
 @app.route('/uarticle')
 def uarticle():
     if session.get('loggedin') and session.get('actor') == '2':
+        # Ambil parameter pencarian dan kategori dari query string
+        search = request.args.get('search', '')  # Jika tidak ada pencarian, defaultnya kosong
+        category = request.args.get('category', '')  # Ambil kategori dari URL
+        page = request.args.get('page', 1, type=int)  # Ambil nomor halaman, default ke halaman 1
+        per_page = 10  # Jumlah artikel per halaman
+
+        # Mulai membangun query untuk filter berdasarkan title, author, category
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM article ORDER BY created ASC")
+
+        query = "SELECT * FROM article WHERE 1=1"
+        params = []
+
+        # Filter berdasarkan pencarian
+        if search:
+            query += " AND (title LIKE %s OR content LIKE %s OR author LIKE %s OR category LIKE %s)"
+            search_pattern = '%' + search + '%'
+            params.extend([search_pattern, search_pattern, search_pattern, search_pattern])
+
+        # Filter berdasarkan kategori (jika ada)
+        if category:
+            query += " AND category = %s"
+            params.append(category)
+
+        # Pagination (LIMIT dan OFFSET)
+        query += " ORDER BY created ASC LIMIT %s OFFSET %s"
+        params.append(per_page)
+        params.append((page - 1) * per_page)
+
+        # Eksekusi query dengan parameter pencarian dan kategori
+        cur.execute(query, tuple(params))
         tampilartikel = cur.fetchall()
-         # Ambil jumlah artikel per kategori
-        cur.execute("""
-            SELECT category, COUNT(*) as count 
-            FROM article 
-            GROUP BY category
-        """)
-        kategori_count = cur.fetchall()
-        
+
+        # Ambil jumlah total artikel berdasarkan filter pencarian dan kategori
+        count_query = "SELECT COUNT(*) FROM article WHERE 1=1"
+        count_params = []
+
+        # Filter pencarian
+        if search:
+            count_query += " AND (title LIKE %s OR content LIKE %s OR author LIKE %s OR category LIKE %s)"
+            count_params.extend([search_pattern, search_pattern, search_pattern, search_pattern])
+
+        # Filter kategori
+        if category:
+            count_query += " AND category = %s"
+            count_params.append(category)
+
+        cur.execute(count_query, tuple(count_params))
+        total_data = cur.fetchone()[0]
+
+        total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
+
         cur.close()
-        
-        # Mengubah kategori_count menjadi dictionary untuk kemudahan akses
+
+        # Mengambil kategori artikel untuk sidebar
+        cur = mysql.connection.cursor()
+        cur.execute("""SELECT category, COUNT(*) as count FROM article GROUP BY category""")
+        kategori_count = cur.fetchall()
+        cur.close()
+
+        # Mengubah kategori_count menjadi dictionary
         jumlahkategori = {row[0]: row[1] for row in kategori_count}
         
+        # Membuat daftar artikel dengan potongan kalimat pertama
         dataartikel = []
         for row in tampilartikel:
             first_sentence = row[2].split('.')[0] + '.' if '.' in row[2] else row[2]
@@ -237,10 +451,20 @@ def uarticle():
                 "author": row[5]
             })
 
-        return render_template('uarticle.html', active_page='article', dataartikel=dataartikel, jumlahkategori=jumlahkategori)
+        return render_template(
+            'uarticle.html',
+            active_page='article',
+            dataartikel=dataartikel,
+            jumlahkategori=jumlahkategori,
+            search=search,
+            category=category,
+            page=page,
+            total_pages=total_pages
+        )
     else:
         flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
         return redirect(url_for('login'))
+
 
     
 @app.route('/detail_article/<int:id>')
@@ -275,14 +499,47 @@ def detail_article(id):
 @app.route('/urecipe')
 def urecipe():
     if session.get('loggedin') and session.get('actor') == '2':
+        # Ambil nomor halaman dari query string (default ke halaman 1 jika tidak ada)
+        page = request.args.get('page', 1, type=int)
+        per_page = 15  # Jumlah data per halaman
+
+        search_query = request.args.get('search', '')  # Ambil query pencarian
+
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM recipe ORDER BY title ASC")
+
+        # Jika ada pencarian, sesuaikan query untuk mencari berdasarkan title
+        if search_query:
+            cur.execute("SELECT COUNT(*) FROM recipe WHERE title LIKE %s", ('%' + search_query + '%',))
+        else:
+            cur.execute("SELECT COUNT(*) FROM recipe")
+        total_data = cur.fetchone()[0]
+
+        total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
+
+        offset = (page - 1) * per_page
+
+        # Jika ada pencarian, sesuaikan query untuk mencari berdasarkan title
+        if search_query:
+            cur.execute("SELECT * FROM recipe WHERE title LIKE %s ORDER BY title ASC LIMIT %s OFFSET %s", ('%' + search_query + '%', per_page, offset))
+        else:
+            cur.execute("SELECT * FROM recipe ORDER BY title ASC LIMIT %s OFFSET %s", (per_page, offset))
+
         tampilresep = cur.fetchall()
+
         cur.close()
-        return render_template('urecipe.html',active_page='urecipe', dataresep=tampilresep)
+
+        return render_template(
+            'urecipe.html',
+            active_page='urecipe',
+            dataresep=tampilresep,
+            page=page,
+            total_pages=total_pages,
+            search=search_query  # Kirimkan query pencarian ke template
+        )
     else:
         flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
         return redirect(url_for('login'))
+
     
 @app.route('/detail_recipe/<int:id>')
 def detail_recipe(id):

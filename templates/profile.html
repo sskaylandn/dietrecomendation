@@ -74,8 +74,9 @@
 			<div class="collapse navbar-collapse" id="navbarmain">
 				<ul class="navbar-nav ml-auto">
                     
-                    <li class="nav-item active"><a class="nav-link" href="{{ url_for('user_dashboard') }}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('user_dashboard') }}">Home</a></li>
                     <li class="nav-item {% if active_page == 'plandiet' %}active{% endif %}" ><a class="nav-link" href="{{ url_for('plandiet') }}">Perencanaan Diet</a></li>
+                    <li class="nav-item {% if active_page == 'tracker' %}active{% endif %}"><a class="nav-link" href="{{ url_for('tracker') }}">Tracker Diet</a></li>
                     <li class="nav-item {% if active_page == 'urecipe' %}active{% endif %}"><a class="nav-link" href="{{ url_for('urecipe') }}">Resep Masakan</a></li>
                     <li class="nav-item {% if active_page == 'uarticle' %}active{% endif %}"><a class="nav-link" href="{{ url_for('uarticle') }}">Hidup Bersih dan Sehat</a></li>
                     <li class="nav-item dropdown">
@@ -151,14 +152,7 @@
 				  </div>
 				</div>
 	
-				<div class="row justify-content-center">
-					<div class="col-lg-4 text-center">
-					  <div class="form-group">
-						<input name="weight" id="weight" type="number" value="{{ user_characteristics[3] }}" step="0.01" class="form-control" placeholder="Masukkan Berat Badan Anda (Contoh : 70.2)" required>
-					  </div>
-					</div>
-				</div>
-	
+				
 				<div class="row justify-content-center">
 					<div class="col-lg-4">
 						<div class="form-group text-center">

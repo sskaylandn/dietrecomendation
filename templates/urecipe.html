@@ -28,6 +28,9 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/icofont/icofont.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/slick-carousel/slick/slick.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/slick-carousel/slick/slick-theme.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 
   <!-- Main Stylesheet -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -71,8 +74,9 @@
 			<div class="collapse navbar-collapse" id="navbarmain">
 				<ul class="navbar-nav ml-auto">
                     
-                    <li class="nav-item active"><a class="nav-link" href="{{ url_for('user_dashboard') }}">Home</a></li>
+					<li class="nav-item"><a class="nav-link" href="{{ url_for('user_dashboard') }}">Home</a></li>
                     <li class="nav-item {% if active_page == 'plandiet' %}active{% endif %}" ><a class="nav-link" href="{{ url_for('plandiet') }}">Perencanaan Diet</a></li>
+                    <li class="nav-item {% if active_page == 'tracker' %}active{% endif %}"><a class="nav-link" href="{{ url_for('tracker') }}">Tracker Diet</a></li>
                     <li class="nav-item {% if active_page == 'urecipe' %}active{% endif %}"><a class="nav-link" href="{{ url_for('urecipe') }}">Resep Masakan</a></li>
                     <li class="nav-item {% if active_page == 'uarticle' %}active{% endif %}"><a class="nav-link" href="{{ url_for('uarticle') }}">Hidup Bersih dan Sehat</a></li>
                     <li class="nav-item dropdown">
@@ -80,7 +84,7 @@
                         <ul class="dropdown-menu" aria-labelledby="dropdown05">
                             <li><a class="dropdown-item" href="{{ url_for('profile') }}">Profile</a></li>
                             <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
-                        </ul>
+                        </ul> 
                     </li>
                     
 					
@@ -89,70 +93,131 @@
 		</div>
 	</nav>
 </header>
+<section class="page-title bg-1">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="block text-center">
+          <span class="text-white">Yuk, lihat</span>
+          <h1 class="text-capitalize mb-4 text-lg">Kumpulan Ide Resep Masakan</h1>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 
 <!-- Slider Start -->
-<section class="page-title bg-1">
-    <div class="overlay"></div>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="block text-center">
-            <span class="text-white">Kumpulan Resep </span>
-            <h1 class="text-capitalize mb-4 text-lg">Makanan Sehari-hari</h1>
+<section class="section blog-wrap">
+	<div class="container">
+	  <div class="row">
+		<div class="col-lg-8">
+		  <div class="row">
+	  
   
+	  <div class="col-lg-12 col-md-12 mb-5">
+		  <div class="blog-item">
+			  <div class="blog-thumb">
+				  
+			  </div>
+        {% for row in dataresep %}
+        <div class="blog-item-content">
+            <div class="blog-item-meta mb-3 mt-4">
+                <span class="text-black text-capitalize mr-3">
+                    <i class="icofont-pencil-alt-5 mr-1"> Ide Resep Masakan</i>
+                </span>
+            </div> 
+            <div class="blog-item-meta mb-3 mt-4">
+            <h4 class="mt-3 mb-3">
+                <a href="{{ url_for('detail_recipe', id=row[0]) }}">{{ row[1] }}</a>
+            </h4>
+            
+            <a href="{{ url_for('detail_recipe', id=row[0]) }}" target="_blank" class="btn btn-main btn-icon btn-round-full">
+                Lihat Resep <i class="icofont-simple-right ml-2"></i>
+            </a>
           </div>
         </div>
+        <br>
+    {% endfor %}
+    
+    <!-- Pagination -->
+<div class="col-lg-12 col-md-12">
+  <nav class="pagination py-2 d-inline-block">
+      <div class="nav-links">
+          {% if page > 1 %}
+              <a class="page-numbers" href="{{ url_for('urecipe', page=page-1) }}">
+                  <i class="icofont-thin-double-left"></i> <!-- Arrow left icon -->
+              </a>
+          {% else %}
+              <span class="page-numbers disabled">
+                  <i class="icofont-thin-double-left"></i>
+              </span>
+          {% endif %}
+
+          {% for p in range(1, total_pages + 1) %}
+              {% if p == page %}
+                  <span class="page-numbers current">{{ p }}</span>
+              {% else %}
+                  <a class="page-numbers" href="{{ url_for('urecipe', page=p) }}">{{ p }}</a>
+              {% endif %}
+          {% endfor %}
+
+          {% if page < total_pages %}
+              <a class="page-numbers" href="{{ url_for('urecipe', page=page+1) }}">
+                  <i class="icofont-thin-double-right"></i> <!-- Arrow right icon -->
+              </a>
+          {% else %}
+              <span class="page-numbers disabled">
+                  <i class="icofont-thin-double-right"></i>
+              </span>
+          {% endif %}
       </div>
-    </div>
-  </section>
-  <!-- contact form start -->
-  
-  <section class="contact-form-wrap section">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-lg-6">
-          <div class="section-title text-center">
-            <h3>Di bawah ini adalah kumpulan resep masakan untuk ide menu makanan kamu sehari-hari</h3>
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-              {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                  <strong>{{message}}</strong> 
-                </div>
-              {% endfor %}
-            {% endif %}
-            {% endwith %}
-            <div class="divider mx-auto my-4"></div>
-            <p class="mb-5"></p>
+  </nav>
+</div>
+
+    
+
+
+		  </div>
+	  </div>
+	  		
+	 
+  </div>
+		</div>
+		<div class="col-lg-4">
+      <div class="sidebar-wrap pl-lg-4 mt-5 mt-lg-0">
+          <div class="sidebar-widget search mb-3">
+              <h5>Search Here</h5>
+              <form action="{{ url_for('urecipe') }}" method="GET" class="search-form">
+                  <div class="input-group">
+                      <input type="text" name="search" class="form-control" placeholder="Search" value="{{ request.args.get('search', '') }}">
+                    </div>
+                    <br>
+                      <div class="input-group">
+                      <button class="btn btn-main btn-icon btn-round-full icofont-search" type="submit">
+                        
+                      </button>
+                  </div>
+              </form>
           </div>
-        </div>
+          {% if search %}
+              <h5>Menampilkan hasil dari pencarian:  "{{ search }}"</h5>
+              <div class="divider my-4"></div>
+          {% endif %}
       </div>
-      <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12">
-			<table class="table">
-				<thead>
-				  <tr>
-					<th scope="col">No</th>
-					<th scope="col">Nama Masakan</th>
-					<th scope="col"></th>
-				  </tr>
-				</thead>
-				<tbody>
-					{% for row in dataresep %}
-					<tr>
-						<th scope="row">{{loop.index}}</th>
-						<td>{{row[1]}}</td>
-						<td>
-							<a href="{{ url_for('detail_recipe', id=row[0]) }}" class="btn btn-main btn-round-full mb-0">Lihat Resep</a>
-						</td>
-					</tr>
-					{% endfor %}
-				</tbody>
-			  </table>
-        </div>
-      </div>
-    </div>
+  </div>
+  
+     
+  
+  
+  
+	  
+  
+		</div>
+	  </div>
+	</div>
   </section>
 <!-- footer Start -->
 <footer class="footer section gray-bg">
@@ -180,8 +245,6 @@
 
     </div>
 </footer>
-
-
 
    
 

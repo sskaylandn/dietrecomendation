@@ -71,8 +71,9 @@
 			<div class="collapse navbar-collapse" id="navbarmain">
 				<ul class="navbar-nav ml-auto">
                     
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('user_dashboard') }}">Home</a></li>
+					<li class="nav-item"><a class="nav-link" href="{{ url_for('user_dashboard') }}">Home</a></li>
                     <li class="nav-item {% if active_page == 'plandiet' %}active{% endif %}" ><a class="nav-link" href="{{ url_for('plandiet') }}">Perencanaan Diet</a></li>
+                    <li class="nav-item {% if active_page == 'tracker' %}active{% endif %}"><a class="nav-link" href="{{ url_for('tracker') }}">Tracker Diet</a></li>
                     <li class="nav-item {% if active_page == 'urecipe' %}active{% endif %}"><a class="nav-link" href="{{ url_for('urecipe') }}">Resep Masakan</a></li>
                     <li class="nav-item {% if active_page == 'uarticle' %}active{% endif %}"><a class="nav-link" href="{{ url_for('uarticle') }}">Hidup Bersih dan Sehat</a></li>
                     <li class="nav-item dropdown">
@@ -129,47 +130,75 @@
 		  </div>
 	  </div>
 	  		
-	  <div class="col-lg-12 col-md-12">
-		  <nav class="pagination py-2 d-inline-block">
-			  <div class="nav-links">
-				  <span aria-current="page" class="page-numbers current">1</span>
-				  <a class="page-numbers" href="#!">2</a>
-				  <a class="page-numbers" href="#!">3</a>
-				  <a class="page-numbers" href="#!"><i class="icofont-thin-double-right"></i></a>
-			  </div>
-		  </nav>
-	  </div>
+	  <!-- Pagination Links -->
+<div class="col-lg-12 col-md-12">
+    <nav class="pagination py-2 d-inline-block">
+        <div class="nav-links">
+            <!-- Tombol Previous Page -->
+            {% if page > 1 %}
+                <a class="page-numbers" href="{{ url_for('uarticle', page=page-1, search=search, category=category_filter, author=author_filter) }}">
+                    <i class="icofont-thin-double-left"></i>
+                </a>
+            {% else %}
+                <span class="page-numbers current"><i class="icofont-thin-double-left"></i></span>
+            {% endif %}
+
+            <!-- Daftar Halaman -->
+            {% for p in range(1, total_pages + 1) %}
+                <a class="page-numbers {% if p == page %}current{% endif %}" href="{{ url_for('uarticle', page=p, search=search, category=category_filter, author=author_filter) }}">
+                    {{ p }}
+                </a>
+            {% endfor %}
+
+            <!-- Tombol Next Page -->
+            {% if page < total_pages %}
+                <a class="page-numbers" href="{{ url_for('uarticle', page=page+1, search=search, category=category_filter, author=author_filter) }}">
+                    <i class="icofont-thin-double-right"></i>
+                </a>
+            {% else %}
+                <span class="page-numbers current"><i class="icofont-thin-double-right"></i></span>
+            {% endif %}
+        </div>
+    </nav>
+</div>
   </div>
 		</div>
 		<div class="col-lg-4">
 		  <div class="sidebar-wrap pl-lg-4 mt-5 mt-lg-0">
-	  <div class="sidebar-widget search  mb-3 ">
-		  <h5>Search Here</h5>
-		  <form action="#" class="search-form">
-			  <input type="text" class="form-control" placeholder="search">
-			  <i class="ti-search"></i>
-		  </form>
-	  </div>
+			<div class="sidebar-widget search mb-3">
+				<h5>Search Here</h5>
+				<form action="{{ url_for('uarticle') }}" method="GET" class="search-form">
+					<div class="input-group">
+						<input type="text" name="search" class="form-control" placeholder="Search by title, author, or category" value="{{ search }}">
+					  </div>
+					  <br>
+						<div class="input-group">
+						<button class="btn btn-main btn-icon btn-round-full icofont-search" type="submit">
+						  
+						</button>
+					</div>
+				</form>
+			</div>
   
-	  <div class="sidebar-widget category mb-3">
-		  <h5 class="mb-4">Kategori</h5>
-  
-		  <ul class="list-unstyled">
-			<li class="align-items-center">
-			  <a href="#">Berita</a>
-			  <span>({{ jumlahkategori.get('berita', 0) }})</span>
-			</li>
-			<li class="align-items-center">
-			  <a href="#">Pengetahuan</a>
-			  <span>({{ jumlahkategori.get('pengetahuan', 0) }})</span>
-			</li>
-			<li class="align-items-center">
-			  <a href="#">Imbauan</a>
-			  <span>({{ jumlahkategori.get('imbauan', 0) }})</span>
-			</li>
+			<div class="sidebar-widget category mb-3">
+				<h5 class="mb-4">Kategori</h5>
 			
-		  </ul>
-	  </div>
+				<ul class="list-unstyled">
+					<li class="align-items-center">
+						<a href="{{ url_for('uarticle', category='berita') }}">Berita</a>
+						<span>({{ jumlahkategori.get('berita', 0) }})</span>
+					</li>
+					<li class="align-items-center">
+						<a href="{{ url_for('uarticle', category='pengetahuan') }}">Pengetahuan</a>
+						<span>({{ jumlahkategori.get('pengetahuan', 0) }})</span>
+					</li>
+					<li class="align-items-center">
+						<a href="{{ url_for('uarticle', category='imbauan') }}">Imbauan</a>
+						<span>({{ jumlahkategori.get('imbauan', 0) }})</span>
+					</li>
+				</ul>
+			</div>
+			
   
   
 	  
