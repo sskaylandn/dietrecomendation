@@ -160,25 +160,20 @@ def admin_dashboard():
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
-    # Cek apakah ada userid di session
     userid = session.get('userid')
     if not userid:
         flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
-        return redirect(url_for('login'))  # Jika tidak ada session userid, arahkan ke halaman login
-    
-    # Mengambil data pengguna dan karakteristiknya
+        return redirect(url_for('login'))  
     cursor = mysql.connection.cursor()
     
-    # Ambil data dari tabel user berdasarkan userid
     cursor.execute("SELECT * FROM user WHERE userid = %s", [userid])
     user_data = cursor.fetchone()
     
-    # Ambil data dari tabel usercharacteristics berdasarkan userid
     cursor.execute("SELECT * FROM usercharacteristics WHERE userid = %s", [userid])
     characteristic_data = cursor.fetchone()
     
-    # Jika request method POST, perbarui data
     if request.method == 'POST':
+        username = request.form.get('username')
         name = request.form.get('name')
         height = request.form.get('height')
         gender = request.form.get('gender')
@@ -186,19 +181,52 @@ def profile():
         goal = request.form.get('goal')
         activity = request.form.get('activity')
 
-        # Update tabel user
-        cursor.execute("""UPDATE user SET name = %s WHERE userid = %s""", (name, userid))
-
-        # Update tabel usercharacteristics
-        cursor.execute("""UPDATE usercharacteristics SET height = %s,  gender = %s, age = %s, goal = %s, activity = %s WHERE userid = %s""",
-                       (height, gender, age, goal, activity, userid))
+        cursor.execute("SELECT COUNT(*) FROM user WHERE username = %s AND userid != %s", (username, userid))
+        result = cursor.fetchone()
         
-        mysql.connection.commit()  # Commit perubahan ke database
-        flash('Profile updated successfully!', 'success')  # Flash pesan sukses
-        return redirect(url_for('profile'))  # Redirect kembali ke halaman profil
+        if result[0] > 0:  
+            flash('Username sudah digunakan oleh pengguna lain. Silakan pilih username lain.', 'danger')
+        else:
+            cursor.execute("UPDATE user SET username = %s, name = %s WHERE userid = %s", (username, name, userid))
 
-    # Render halaman profil dengan data pengguna dan karakteristik
+            cursor.execute("""UPDATE usercharacteristics SET height = %s, gender = %s, age = %s, goal = %s, activity = %s 
+                              WHERE userid = %s""", (height, gender, age, goal, activity, userid))
+            
+            mysql.connection.commit()  
+            flash('Profile updated successfully!', 'success')  
+            return redirect(url_for('profile'))  
+
     return render_template('profile.html', user=user_data, user_characteristics=characteristic_data)
+
+@app.route('/admprofile', methods=['GET', 'POST'])
+def admprofile():
+    userid = session.get('userid')
+    if not userid:
+        flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
+        return redirect(url_for('login'))  
+    cursor = mysql.connection.cursor()
+    
+    cursor.execute("SELECT * FROM user WHERE userid = %s", [userid])
+    user_data = cursor.fetchone()
+    
+    if request.method == 'POST':
+        username = request.form.get('username')
+        name = request.form.get('name')
+        
+        cursor.execute("SELECT COUNT(*) FROM user WHERE username = %s AND userid != %s", (username, userid))
+        result = cursor.fetchone()
+        
+        if result[0] > 0:  
+            flash('Username sudah digunakan oleh pengguna lain. Silakan pilih username lain.', 'danger')
+        else:
+            cursor.execute("UPDATE user SET username = %s, name = %s WHERE userid = %s", (username, name, userid))
+
+            
+            mysql.connection.commit()  
+            flash('Profile updated successfully!', 'success')  
+            return redirect(url_for('admprofile'))  
+
+    return render_template('admprofile.html', user=user_data, )
 
 
 @app.route('/recomendation')

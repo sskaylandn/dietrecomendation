@@ -28,10 +28,6 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/icofont/icofont.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/slick-carousel/slick/slick.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/slick-carousel/slick/slick-theme.css') }}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
-
 
   <!-- Main Stylesheet -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -75,7 +71,7 @@
 			<div class="collapse navbar-collapse" id="navbarmain">
 				<ul class="navbar-nav ml-auto">
                     
-                        <li class="nav-item active"><a class="nav-link" href="{{ url_for('admin_dashboard') }}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard') }}">Home</a></li>
 						<li class="nav-item dropdown">
 							<a class="nav-link dropdown-toggle" href="{{ url_for('profile') }}" id="dropdown05" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hello, {{session.email}} <i class="icofont-thin-down"></i></a>
 							<ul class="dropdown-menu" aria-labelledby="dropdown05">
@@ -93,96 +89,100 @@
 
 
 <!-- Slider Start -->
-
-
-
-   
-<div class="container-fluid">
-    <div class="row no-gutters">
-        <!-- Sidebar Start -->
-        <div class="col-lg-2 col-md-4 col-sm-12"> 
-            <div class="sidebar-wrap pl-3 mt-4 mt-lg-0"> 
-                <div class="sidebar-widget category mb-3">
-                    <h5 class="mb-4">Menu Admin</h5>
-                    <ul class="list-unstyled">
-                        <li class="align-items-center {% if active_page == 'recipe' %}active{% endif %}">
-                            <a href="{{ url_for('recipe') }}">Data Resep Makanan</a>
-                        </li>
-                        <li class="align-items-center {% if active_page == 'pengguna' %}active{% endif %}">
-                            <a href="{{ url_for('pengguna') }}">Data Pengguna</a>
-                        </li>
-                        <li class="align-items-center {% if active_page == 'article' %}active{% endif %}">
-                            <a href="{{ url_for('article') }}">Data Artikel</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+<!-- Slider Start -->
+<section class="page-title bg-1">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="block text-center">
+            <span class="text-white">Hello, </span>
+            <h1 class="text-capitalize mb-4 text-lg">{{session.email}}</h1>
+  
+          </div>
         </div>
-        <!-- Body Center Start -->
-        <div class="container-xxl flex-grow-1 container-p-y pe-3 col-lg-9 col-md-4 col-sm-12">
-            <h4 class="py-3 mb-4"><span class="text-muted fw-light">Data / Tambah Resep Makanan</span></h4>
-    
-            <!-- Basic Bootstrap Table -->
-            <div class="card">
-            <h5 class="card-header">Tambah Data Resep Makanan</h5>
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong>{{message}}</strong>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                      </div>
-                    {% endfor %}
-                {% endif %}
-                {% endwith %}
-            <div class="table-responsive text-nowrap">
-                <form method="post" action="{{url_for('add_recipe')}}">
-                <div class="sidebar-widget schedule-widget mb-3  ">
-                    <div class="mb-3 row">
-                        <label for="inputPassword" class="col-sm-2 col-form-label">Nama Masakan</label>
-                        <div class="col-sm-9 text-center">
-                            <input name="title" id="title" type="text" class="form-control" placeholder="Masukkan Nama Masakan" required>
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="inputPassword" class="col-sm-2 col-form-label">Bahan Baku</label>
-                        <div class="col-sm-9 text-center">
-                            <textarea name="ingredients" id="ingredients" type="text" class="form-control" placeholder="Masukkan Bahan Baku" required></textarea>
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="inputPassword" class="col-sm-2 col-form-label">Cara Memasak</label>
-                        <div class="col-sm-9 text-center">
-                            <textarea name="steps" id="steps" type="text" class="form-control" placeholder="Masukkan Cara Memasak" required></textarea>
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="inputPassword" class="col-sm-2 col-form-label">URL (Jika Ada)</label>
-                        <div class="col-sm-9 text-center">
-                            <input name="url" id="url" type="text" class="form-control" placeholder="Masukkan URL Resep (Jika Ada)" >
-                        </div>
-                    </div>
-                    
-                    <div class="sidebar-widget schedule-widget mb-0 d-flex justify-content-end">
-                            <input class="btn btn-main btn-round-full" type="submit" value="Tambah Data"></input>
-                    </div>
-                     
-
-                </div>
-            </form>  
-            <script>
-                CKEDITOR.replace('ingredients');
-                CKEDITOR.replace('steps');
-            </script>
-               
-            </div>
-        
-            </div>
-        </div>
+      </div>
     </div>
-</div>
+  </section>
+  <!-- contact form start -->
+  
+  <section class="contact-form-wrap section">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-6">
+          <div class="section-title text-center">
+            <h3> Kamu bisa mengubah profile kamu disini </h3>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                  <strong>{{message}}</strong> 
+                </div>
+              {% endfor %}
+            {% endif %}
+            {% endwith %}
+            <div class="divider mx-auto my-4"></div>
+            <p class="mb-5"></p>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+          <form id="profile"  method="post" action="{{url_for('admprofile')}}">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-3 label-col">
+                  <h6>Username</h6>
+                </div>
+                <div class="col-12 col-md-4  form-group text-center  input-col">
+                  <input name="username" id="username" type="text" value="{{ user[1] }}" class="form-control" placeholder="Username" required>
+                </div>
+                <div class="col-12 col-md-3 span-col">
+                  <span id="passwordHelpInline" class="form-text">
+                    Isi ini kalau kamu mau mengganti username kamu
+                  </span>
+                </div>
+              </div>
+              <div class="row justify-content-center">
+                <div class="col-12 col-md-3 label-col">
+                  <h6>E-Mail</h6>
+                </div>
+                <div class="col-12 col-md-4  form-group text-center  input-col">
+                  <input name="email" id="email" type="email" value="{{ user[2] }}" class="form-control" placeholder="Nama" required readonly>
+                </div>
+                <div class="col-12 col-md-3 span-col">
+                  <span id="passwordHelpInline" class="form-text">
+                    Mohon maaf, email tidak dapat diubah
+                  </span>
+                </div>
+              </div>
+  
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-3 label-col">
+                <h6>Nama</h6>
+              </div>
+              <div class="col-12 col-md-4  form-group text-center  input-col">
+                <input name="name" id="name" type="text" value="{{ user[4] }}" class="form-control" placeholder="Nama" required>
+              </div>
+              <div class="col-12 col-md-3 span-col">
+                <span id="passwordHelpInline" class="form-text">
+                  Isi ini kalau kamu mau mengganti nama kamu
+                </span>
+              </div>
+            </div>
+  
 
-
+            <div class="row justify-content-center">
+              <div class="col-lg-4 text-center">
+                <div class="form-group">
+                  <input class="btn btn-main btn-round-full" name="submit" type="submit" value="Simpan Data">
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
 <!-- footer Start -->
 <footer class="footer section ">
 	<div class="container">

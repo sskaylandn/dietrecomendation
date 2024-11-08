@@ -28,9 +28,6 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/icofont/icofont.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/slick-carousel/slick/slick.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/slick-carousel/slick/slick-theme.css') }}">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 
   <!-- Main Stylesheet -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -76,7 +73,7 @@
                     
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('user_dashboard') }}">Home</a></li>
                     <li class="nav-item {% if active_page == 'plandiet' %}active{% endif %}" ><a class="nav-link" href="{{ url_for('plandiet') }}">Perencanaan Diet</a></li>
-                    <li class="nav-item {% if active_page == 'tracker' %}active{% endif %}"><a class="nav-link" href="{{ url_for('tracker') }}">Tracker Diet</a></li>
+                    <li class="nav-item {% if active_page == 'urecipe' %}active{% endif %}"><a class="nav-link" href="{{ url_for('tracker') }}">Tracker Diet</a></li>
                     <li class="nav-item {% if active_page == 'urecipe' %}active{% endif %}"><a class="nav-link" href="{{ url_for('urecipe') }}">Resep Masakan</a></li>
                     <li class="nav-item {% if active_page == 'uarticle' %}active{% endif %}"><a class="nav-link" href="{{ url_for('uarticle') }}">Hidup Bersih dan Sehat</a></li>
                     <li class="nav-item dropdown">
@@ -102,8 +99,8 @@
       <div class="row">
         <div class="col-md-12">
           <div class="block text-center">
-            <span class="text-white"> </span>
-            <h1 class="text-capitalize mb-4 text-lg">Profile</h1>
+            <span class="text-white">Hello, </span>
+            <h1 class="text-capitalize mb-4 text-lg">{{session.email}}</h1>
   
           </div>
         </div>
@@ -134,84 +131,135 @@
       </div>
       <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
-			<form id="profile"  method="post" action="{{url_for('profile')}}">
+          <form id="profile"  method="post" action="{{url_for('profile')}}">
+
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-3 label-col">
+                <h6>Username</h6>
+              </div>
+              <div class="col-12 col-md-4  form-group text-center  input-col">
+                <input name="username" id="username" type="text" value="{{ user[1] }}" class="form-control" placeholder="Username" required>
+              </div>
+              <div class="col-12 col-md-3 span-col">
+                <span id="passwordHelpInline" class="form-text">
+                  Isi ini kalau kamu mau mengganti username kamu
+                </span>
+              </div>
+            </div>
   
-				<div class="row justify-content-center">
-					<div class="col-lg-4 text-center">
-					  <div class="form-group">
-						<input name="name" id="name" type="text" value="{{ user[4] }}" class="form-control" placeholder="Masukkan Nama" required>
-					  </div>
-					</div>
-				  </div>
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-3 label-col">
+                <h6>Nama</h6>
+              </div>
+              <div class="col-12 col-md-4  form-group text-center  input-col">
+                <input name="name" id="name" type="text" value="{{ user[4] }}" class="form-control" placeholder="Nama" required>
+              </div>
+              <div class="col-12 col-md-3 span-col">
+                <span id="passwordHelpInline" class="form-text">
+                  Isi ini kalau kamu mau mengganti nama kamu
+                </span>
+              </div>
+            </div>
+  
+  
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-3 label-col">
+                <h6>Tinggi Badan (cm)</h6>
+              </div>
+              <div class="col-12 col-md-4  form-group text-center  input-col">
+                <input name="height" id="height" type="number" min="0" step="0.01" value="{{ user_characteristics[2] }}" class="form-control" placeholder="(Contoh : 165.2)" required="">
+              </div>
+              <div class="col-12 col-md-3 span-col">
+                <span id="passwordHelpInline" class="form-text">
+                  Isi ini kalau kamu mau mengganti tinggi kamu
+                </span>
+              </div>
+            </div>
 
-				<div class="row justify-content-center">
-				  <div class="col-lg-4 text-center">
-					<div class="form-group">
-					  <input name="height" id="height" type="number" value="{{ user_characteristics[2] }}" step="0.01" class="form-control" placeholder="Masukkan Tinggi Badan Anda (Contoh : 165.2)" required>
-					</div>
-				  </div>
-				</div>
-	
-				
-				<div class="row justify-content-center">
-					<div class="col-lg-4">
-						<div class="form-group text-center">
-							<select name="gender" id="gender" class="form-control mt-2" required>
-								<option value="" disabled selected>Pilih Jenis Kelamin</option>
-								<option value="wanita" {% if user_characteristics[4] == 'wanita' %}selected{% endif %}>Wanita</option>
-								<option value="pria" {% if user_characteristics[4] == 'pria' %}selected{% endif %}>Pria</option>
-							</select>
-						</div>
-					</div>
-				</div>
-				
-				
-	
-				<div class="row justify-content-center">
-					<div class="col-lg-4 text-center">
-					  <div class="form-group">
-						<input name="age" id="age" type="number" value="{{ user_characteristics[5] }}" step="0.01" class="form-control" placeholder="Masukkan Umur Anda (Contoh : 25)" required>
-					  </div>
-					</div>
-				</div>
-	
-				<div class="row justify-content-center">
-					<div class="col-lg-4">
-						<div class="form-group text-center">
-							<select name="goal" id="goal" class="form-control mt-2" required>
-								<option value="" disabled selected>Tujuan Pola Hidup Sehat</option>
-								<option value="lose" {% if user_characteristics[6] == 'lose' %}selected{% endif %}>Mengurangi Berat Badan</option>
-								<option value="maintain" {% if user_characteristics[6] == 'maintain' %}selected{% endif %}>Menjaga Berat Badan</option>
-								<option value="gain" {% if user_characteristics[6] == 'gain' %}selected{% endif %}>Menambah Berat Badan</option>
-							</select>
-						</div>
-					</div>
-				</div>
-	
-				<div class="row justify-content-center">
-					<div class="col-lg-4">
-						<div class="form-group text-center">
-							<select name="activity" id="activity" class="form-control mt-2" required>
-								<option value="" disabled selected>Aktivitas Fisik Sehari-hari</option>
-								<option value="sedentary" {% if user_characteristics[7] == 'sedentary' %}selected{% endif %}>Aktivitas Ringan Sehari-hari</option>
-								<option value="lowactive" {% if user_characteristics[7] == 'lowactive' %}selected{% endif %}>30-60 Menit Aktivitas Sedang</option>
-								<option value="active" {% if user_characteristics[7] == 'active' %}selected{% endif %}> > 60 Menit Aktivitas Sedang</option>
-								<option value="veryactive" {% if user_characteristics[7] == 'veryactive' %}selected{% endif %}> > 120 Menit Aktivitas Sedang</option>
-							</select>
-						</div>
-					</div>
-				</div>
-				
-				<div class="row justify-content-center">
-				  <div class="col-lg-4 text-center">
-					<div class="form-group">
-					  <input class="btn btn-main btn-round-full" name="submit" type="submit" value="Simpan Data"></input>
-					</div>
-				  </div>
-				</div>
-				
-			  </form>
+           
 
+           
+
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-3 label-col">
+                <h6>Jenis Kelamin</h6>
+              </div>
+              <div class="col-12 col-md-4  form-group text-center  input-col">
+                <select name="gender" id="gender" class="form-control mt-2" required>
+                  <option value="" disabled selected>Pilih Jenis Kelamin</option>
+                  <option value="wanita" {% if user_characteristics[4] == 'wanita' %}selected{% endif %}>Wanita</option>
+                  <option value="pria" {% if user_characteristics[4] == 'pria' %}selected{% endif %}>Pria</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-3 span-col">
+                <span id="passwordHelpInline" class="form-text">
+                  Isi ini kalau kamu mau mengganti jenis kelamin kamu
+                </span>
+              </div>
+            </div>
+
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-3 label-col">
+                <h6>Umur (tahun)</h6>
+              </div>
+              <div class="col-12 col-md-4  form-group text-center  input-col">
+                <input name="age" id="age" type="number" value="{{ user_characteristics[5] }}" class="form-control" placeholder="Masukkan Umur Anda (Contoh : 25)" required>
+              </div>
+              <div class="col-12 col-md-3 span-col">
+                <span id="passwordHelpInline" class="form-text">
+                  Isi ini kalau kamu mau mengganti umur kamu
+                </span>
+              </div>
+            </div>
+            
+
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-3 label-col">
+                <h6>Goals</h6>
+              </div>
+              <div class="col-12 col-md-4  form-group text-center  input-col">
+                <select name="goal" id="goal" class="form-control mt-2" required>
+                  <option value="" disabled selected>Tujuan Pola Hidup Sehat</option>
+                  <option value="lose" {% if user_characteristics[6] == 'lose' %}selected{% endif %}>Mengurangi Berat Badan</option>
+                  <option value="maintain" {% if user_characteristics[6] == 'maintain' %}selected{% endif %}>Menjaga Berat Badan</option>
+                  <option value="gain" {% if user_characteristics[6] == 'gain' %}selected{% endif %}>Menambah Berat Badan</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-3 span-col">
+                <span id="passwordHelpInline" class="form-text">
+                  Isi ini kalau kamu mau mengganti tujuan pola hidup kamu
+                </span>
+              </div>
+            </div>
+
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-3 label-col">
+                <h6>Aktivitas Harian</h6>
+              </div>
+              <div class="col-12 col-md-4  form-group text-center  input-col">
+                <select name="activity" id="activity" class="form-control mt-2" required>
+                  <option value="" disabled selected>Aktivitas Fisik Sehari-hari</option>
+                  <option value="sedentary" {% if user_characteristics[7] == 'sedentary' %}selected{% endif %}>Aktivitas Ringan Sehari-hari</option>
+                  <option value="lowactive" {% if user_characteristics[7] == 'lowactive' %}selected{% endif %}>30-60 Menit Aktivitas Sedang</option>
+                  <option value="active" {% if user_characteristics[7] == 'active' %}selected{% endif %}> > 60 Menit Aktivitas Sedang</option>
+                  <option value="veryactive" {% if user_characteristics[7] == 'veryactive' %}selected{% endif %}> > 120 Menit Aktivitas Sedang</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-3 span-col">
+                <span id="passwordHelpInline" class="form-text">
+                  Isi ini kalau kamu mau mengganti aktivitas harian kamu
+                </span>
+              </div>
+            </div>
+
+            <div class="row justify-content-center">
+              <div class="col-lg-4 text-center">
+                <div class="form-group">
+                  <input class="btn btn-main btn-round-full" name="submit" type="submit" value="Simpan Data">
+                </div>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>

@@ -1468,10 +1468,12 @@ a:focus {
     max-width: 900px;   
     margin: auto;       
 }
-.centered-container {
-    display: grid;
-    place-items: center;  /* Meratakan konten di tengah secara vertikal dan horizontal */
-    height: 100vh;         /* Mengatur tinggi container agar mencakup seluruh tinggi viewport */
+.centered-content {
+    display: flex;
+    flex-direction: column;  /* Mengatur elemen secara vertikal */
+    justify-content: center; /* Untuk menempatkan konten secara vertikal di tengah */
+    align-items: center;     /* Untuk menempatkan konten secara horizontal di tengah */
+    text-align: center;      /* Meratakan teks di tengah */
 }
 
 
