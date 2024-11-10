@@ -28,6 +28,13 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/icofont/icofont.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/slick-carousel/slick/slick.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/slick-carousel/slick/slick-theme.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">\
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.1/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 
   <!-- Main Stylesheet -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -71,18 +78,18 @@
 			<div class="collapse navbar-collapse" id="navbarmain">
 				<ul class="navbar-nav ml-auto">
                     
-					<li class="nav-item"><a class="nav-link" href="{{ url_for('user_dashboard') }}">Home</a></li>
-                    <li class="nav-item {% if active_page == 'plandiet' %}active{% endif %}" ><a class="nav-link" href="{{ url_for('plandiet') }}">Perencanaan Diet</a></li>
-                    <li class="nav-item {% if active_page == 'tracker' %}active{% endif %}"><a class="nav-link" href="{{ url_for('tracker') }}">Tracker Diet</a></li>
-                    <li class="nav-item {% if active_page == 'urecipe' %}active{% endif %}"><a class="nav-link" href="{{ url_for('urecipe') }}">Resep Masakan</a></li>
-                    <li class="nav-item {% if active_page == 'uarticle' %}active{% endif %}"><a class="nav-link" href="{{ url_for('uarticle') }}">Hidup Bersih dan Sehat</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="{{ url_for('profile') }}" id="dropdown05" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hello, {{session.email}} <i class="icofont-thin-down"></i></a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdown05">
-                            <li><a class="dropdown-item" href="{{ url_for('profile') }}">Profile</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
-                        </ul>
-                    </li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('user_dashboard') }}">Home</a></li>
+          <li class="nav-item {% if active_page == 'plandiet' %}active{% endif %}" ><a class="nav-link" href="{{ url_for('plandiet') }}">Perencanaan Diet</a></li>
+          <li class="nav-item {% if active_page == 'tracker' %}active{% endif %}"><a class="nav-link" href="{{ url_for('tracker') }}">Tracker Diet</a></li>
+          <li class="nav-item {% if active_page == 'urecipe' %}active{% endif %}"><a class="nav-link" href="{{ url_for('urecipe') }}">Resep Masakan</a></li>
+          <li class="nav-item {% if active_page == 'uarticle' %}active{% endif %}"><a class="nav-link" href="{{ url_for('uarticle') }}">Hidup Bersih dan Sehat</a></li>
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="{{ url_for('profile') }}" id="dropdown05" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hello, {{session.email}} <i class="icofont-thin-down"></i></a>
+              <ul class="dropdown-menu" aria-labelledby="dropdown05">
+                  <li><a class="dropdown-item" href="{{ url_for('profile') }}">Profile</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+              </ul>
+          </li>
                     
 					
 				</ul>
@@ -93,231 +100,136 @@
 
 
 <!-- Slider Start -->
-<section class="banner">
-	<div class="container">
-		<div class="row">
-			<div class="col-lg-6 col-md-12 col-xl-7">
-				<div class="block">
-					<div class="divider mb-3"></div>
-					<h1 class="mb-3 mt-3">Hello, {{session.email}}</h1>
-					
-					<div class="container">
-						<div class="row">
-							<div class="col-lg-12">
-								<div class="feature-block d-lg-flex">
-									<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
-										<div class="feature-icon mb-4">
-											<i class="icofont-fruits"></i>
-										</div>
-										<span>Kondisi Saat Ini :</span>
-										<h4 class="mb-3">TINGGI BADAN</h4>
-										<h3 class="mb-3"> CM</h3>
-									</div>
-					
-									<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
-										<div class="feature-icon mb-4">
-											<i class="icofont-bathtub"></i>
-										</div>
-										<span>Kondisi Saat Ini :</span>
-										<h4 class="mb-3">BERAT BADAN</h4>
-										<h3 class="mb-3"> KG</h3>
-									</div>
-					
-									<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
-										<div class="feature-icon mb-4">
-											<i class="icofont-female"></i>
-										</div>
-										<span>Kondisi Saat Ini :</span>
-										<h4 class="mb-3">BMI</h4>
-										<h3 class="mb-3"></h3>
-									</div>
-					
-									<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
-										<div class="feature-icon mb-4">
-											<i class="icofont-female"></i>
-										</div>
-										<span>Kondisi Saat Ini :</span>
-										<h4 class="mb-3">BMR</h4>
-										<h3 class="mb-3"></h3>
-									</div>
-					
-									<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">
-										<div class="feature-icon mb-4">
-											<i class="icofont-cycling"></i>
-										</div>
-										<span>Kondisi Saat Ini :</span>
-										<h4 class="mb-3">GOALS</h4>
-										<h3 class="mb-3"></h3>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					
-				</div>
-				
-			</div>
-		</div>
-	</div>
-</section>
+<section class="page-title bg-1">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="block text-center">
+            <span class="text-white">Hello, {{session.email}} </span>
+            <h1 class="text-capitalize mb-4 text-lg">Yuk, rencanakan dietmu</h1>
+  
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- contact form start -->
+  
+  <section class="contact-form-wrap section">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-6">
+          <div class="section-title text-center">
+            <h3>Yuk lihat plan diet untuk {{session.email}} </h3>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                  <strong>{{message}}</strong> 
+                </div>
+              {% endfor %}
+            {% endif %}
+            {% endwith %}
+            <div class="divider mx-auto my-4"></div>
+            <p class="mb-5"></p>
+          </div>
+        </div>
+      </div>
+      
+            
+     
+      <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-8 col-md-6">
+                            <div class="doctor-img-block">
+                            <!--Tabel Histori-->  
+                            <h5>Hasil Plan Diet:</h5>
+                            <div class="divider my-4"></div>
+                            {% if result %}
+                                <p><strong>BMR:</strong> {{ result.bmr|round(2) }} kalori</p>
+                                <p><strong>Tujuan:</strong> {{ result.goal }}</p>
+                                <p><strong>BMR dibutuhkan berdasarkan tujuan diet:</strong> {{ result.bmr_adjusted|round(2) }} kalori</p>
 
+                                <h4>Rekomendasi Makanan:</h4>
 
-<section class="section about">
-	<div class="container">
-		<div class="row align-items-center">
-			<div class="col-lg-8 col-sm-6">
-				<div class="about-img mt-4 mt-lg-0">
-					<img src="{{ url_for('static', filename='images/about/img-3.jpeg') }}" alt=""  class="img-fluid" style="width: 100%; height: auto;">
-				</div>
-			</div>
-			<div class="col-lg-4">
-				<div class="about-content pl-4 mt-4 mt-lg-0">
-					<h2 class="title-color">Isi <br>Piringku</h2>
-					<p class="mt-4 mb-5">Isi Piringku merupakan pedoman yang disusun oleh Kementerian Kesehatan mengampanyekan konsumsi makanan yang sesuai dengan pedoman gizi seimbang. Dalam satu piring setiap kali makan, setengah piring diisi dengan sayur dan buah, sedangkan setengah lainnya diisi dengan makanan pokok dan lauk pauk.</p>
-					<a href="isipiringku.html" class="btn btn-main-2 btn-round-full btn-icon">Selengkapnya<i class="icofont-simple-right ml-3"></i></a>
-				</div>
-			</div>
-		</div>
-	</div>
-</section>
+                                <h5>Breakfast:</h5>
+                                {{ result.breakfast.to_html(classes='table table-bordered table-striped table-hover')|safe }}
 
-<section class="section service gray-bg">
-	<div class="container">
-		<div class="row justify-content-center">
-			<div class="col-lg-7 text-center">
-				<div class="section-title">
-					<h2>10 Pesan Gizi Seimbang</h2>
-					<div class="divider mx-auto my-4"></div>
-					<p>Merupakan pesan-pesan yang berkaitan dengan pola makan dan gaya hidup sehat yang dapat membantu menjaga kesehatan tubuh.</p>
-				</div>
-			</div>
-		</div>
+                                <h5>Lunch:</h5>
+                                {{ result.lunch.to_html(classes='table table-bordered table-striped table-hover')|safe }}
 
-		<div class="row">
-			<div class="col-lg-4 col-md-6 col-sm-6">
-				<div class="service-item mb-4">
-					<div class="icon d-flex align-items-center">
-						<i class="icofont-fruits text-lg"></i>
-						<h4 class="mt-3 mb-3">Konsumsi Aneka Ragam Pangan</h4>
-					</div>
+                                <h5>Dinner:</h5>
+                                {{ result.dinner.to_html(classes='table table-bordered table-striped table-hover')|safe }}
 
-					<div class="content">
-						<p class="mb-4">Konsumsi aneka ragam makanan setiap kali mengkonsumsi makanan.</p>
-					</div>
-				</div>
-			</div>
-            <div class="col-lg-4 col-md-6 col-sm-6">
-				<div class="service-item mb-4">
-					<div class="icon d-flex align-items-center">
-						<i class="icofont-ui-calculator text-lg"></i>
-						<h4 class="mt-3 mb-3">Batasi Konsumsi Panganan</h4>
-					</div>
+                                <h5>Snacks (Buah-buahan):</h5>
+                                {{ result.snacks.to_html(classes='table table-bordered table-striped table-hover')|safe }}
 
-					<div class="content">
-						<p class="mb-4">Batasi konsumsi makanan asin, manis, dan berlemak.</p>
-					</div>
-				</div>
-			</div>
-            <div class="col-lg-4 col-md-6 col-sm-6">
-				<div class="service-item mb-4">
-					<div class="icon d-flex align-items-center">
-						<i class="icofont-gym text-lg"></i>
-						<h4 class="mt-3 mb-3">Lakukan Aktivitas Fisik</h4>
-					</div>
+                                
+                            {% endif %}
+                        </div>
+                        </div>
+            
+                        <div class="col-lg-4 col-md-6 ">
+                            <div class="doctor-details mt-4 mt-lg-0 ">
+                                <h5>Buat Plan Diet:</h5>
+                                <div class="divider my-4"></div>
+                                <form method="POST">
+                                    <div class="form-group">
+                                        <label for="gender">Gender:</label>
+                                        <select name="gender" id="gender" class="form-control" required>
+                                            <option value="wanita" {% if gender == 'wanita' %}selected{% endif %}>wanita</option>
+                                            <option value="pria" {% if gender == 'pria' %}selected{% endif %}>pria</option>
+                                        </select>
+                                    </div>
+                        
+                                    <div class="form-group">
+                                        <label for="age">Age:</label>
+                                        <input type="number" name="age" id="age" class="form-control" value="{{ age }}" required>
+                                    </div>
+                        
+                                    <div class="form-group">
+                                        <label for="weight">Weight (kg):</label>
+                                        <input type="number" name="weight" id="weight" class="form-control" step="0.1" value="{{ weight }}" required>
+                                    </div>
+                        
+                                    <div class="form-group">
+                                        <label for="height">Height (cm):</label>
+                                        <input type="number" name="height" id="height" class="form-control" step="0.1" value="{{ height }}" required>
+                                    </div>
+                        
+                                    <div class="form-group">
+                                        <label for="activity">Activity Level:</label>
+                                        <select name="activity" id="activity" class="form-control" required>
+                                            <option value="sedentary" {% if activity == 'sedentary' %}selected{% endif %}>Sedentary</option>
+                                            <option value="lowactive" {% if activity == 'lowactive' %}selected{% endif %}>Low Active</option>
+                                            <option value="active" {% if activity == 'active' %}selected{% endif %}>Active</option>
+                                            <option value="veryactive" {% if activity == 'veryactive' %}selected{% endif %}>Very Active</option>
+                                        </select>
+                                    </div>
+                        
+                                    <div class="form-group">
+                                        <label for="goal">Goal:</label>
+                                        <select name="goal" id="goal" class="form-control" required>
+                                            <option value="lose" {% if goal == 'lose' %}selected{% endif %}>Lose Weight</option>
+                                            <option value="gain" {% if goal == 'gain' %}selected{% endif %}>Gain Weight</option>
+                                            <option value="maintain" {% if goal == 'maintain' %}selected{% endif %}>Maintain Weight</option>
+                                        </select>
+                                    </div>
+                        
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-					<div class="content">
-						<p class="mb-4">Lakukan olahraga dan aktivitas fisik secara rutin dan teratur.</p>
-					</div>
-				</div>
-			</div>
-            <div class="col-lg-4 col-md-6 col-sm-6">
-				<div class="service-item mb-4">
-					<div class="icon d-flex align-items-center">
-						<i class="icofont-chicken text-lg"></i>
-						<h4 class="mt-3 mb-3">Konsumsi Lauk Protein Tinggi</h4>
-					</div>
-
-					<div class="content">
-						<p class="mb-4">Konsumsi lauk berprotein tinggi setiap harinya.</p>
-					</div>
-				</div>
-			</div>
-            <div class="col-lg-4 col-md-6 col-sm-6">
-				<div class="service-item mb-4">
-					<div class="icon d-flex align-items-center">
-						<i class="icofont-hand text-lg"></i>
-						<h4 class="mt-3 mb-3">Cuci Tangan Pakai Sabun</h4>
-					</div>
-
-					<div class="content">
-						<p class="mb-4">Cuci tangan hingga bersih menggunakan sabun dan air mengalir.</p>
-					</div>
-				</div>
-			</div>
-			<div class="col-lg-4 col-md-6 col-sm-6">
-				<div class="service-item mb-4">
-					<div class="icon d-flex align-items-center">
-						<i class="icofont-banana text-lg"></i>
-						<h4 class="mt-3 mb-3">Biasakan Sarapan</h4>
-					</div>
-					<div class="content">
-						<p class="mb-4">Biasakan sarapan pagi sebelum memulai aktivitas.</p>
-					</div>
-				</div>
-			</div>
-			
-			<div class="col-lg-4 col-md-6 col-sm-6">
-				<div class="service-item mb-4">
-					<div class="icon d-flex align-items-center">
-						<i class="icofont-water-bottle text-lg"></i>
-						<h4 class="mt-3 mb-3">Konsumsi Air Putih</h4>
-					</div>
-					<div class="content">
-						<p class="mb-4">Minum air putih yang cukup dan aman setiap hari.</p>
-					</div>
-				</div>
-			</div>
-
-
-			<div class="col-lg-4 col-md-6 col-sm-6">
-				<div class="service-item mb-4">
-					<div class="icon d-flex align-items-center">
-						<i class="icofont-apple text-lg"></i>
-						<h4 class="mt-3 mb-3">Konsumsi Buah dan Sayur</h4>
-					</div>
-
-					<div class="content">
-						<p class="mb-4">Konsumsi banyak buah dan sayur untuk memenuhi kebutuhan serat.</p>
-					</div>
-				</div>
-			</div>
-
-			<div class="col-lg-4 col-md-6 col-sm-6">
-				<div class="service-item mb-4">
-					<div class="icon d-flex align-items-center">
-						<i class="icofont-listing-box text-lg"></i>
-						<h4 class="mt-3 mb-3">Baca Label Kemasan</h4>
-					</div>
-					<div class="content">
-						<p class="mb-4">Biasakan membaca label pada kemasan makanan sebelum dikonsumsi.</p>
-					</div>
-				</div>
-			</div>
-			
-			<div class="col-lg-4 col-md-6 col-sm-6">
-				<div class="service-item mb-4">
-					<div class="icon d-flex align-items-center">
-						<i class="icofont-heart text-lg"></i>
-						<h4 class="mt-3 mb-3">Syukuri dan Nikmati Makanan</h4>
-					</div>
-					<div class="content">
-						<p class="mb-4">Syukuri dan nikmati semua makanan yang dikonsumsi.</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</section>
+        </div>
+      </div>
+    </div>
+  </section>
 <!-- footer Start -->
 <footer class="footer section gray-bg">
 	<div class="container">
@@ -344,6 +256,9 @@
 
     </div>
 </footer>
+
+
+
 
    
 

@@ -4,8 +4,11 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from flask_ckeditor import CKEditor
 from datetime import datetime
+from recomendation import calculate_bmr, adjust_bmr_for_goal, recommend_balanced_meals  
 import os
 import json
+import pandas as pd
+import pickle
 
 app = Flask(__name__)
 
@@ -30,6 +33,10 @@ ckeditor = CKEditor(app)
 app.config['CKEDITOR_PKG_TYPE'] = 'standard'
 app.config['CKEDITOR_SERVE_LOCAL'] = False
 app.config['CKEDITOR_CDN'] = "https://cdn.ckeditor.com/4.25.0/standard/ckeditor.js"
+
+with open(r'C:\Users\USER\dietrecomendation\rf_model.pkl', 'rb') as model_file:
+    rf_model = pickle.load(model_file)
+    print("Model berhasil dimuat")
 
 @app.route('/')
 def index():
@@ -67,7 +74,7 @@ def user_dashboard():
             goal = user_data[4]
             activity = user_data[5]  # Ambil data aktivitas dari database
 
-            # Hitung BMI
+            # Hitung BMI 
             height_in_meters = height / 100  
             bmi = weight / (height_in_meters ** 2) if height_in_meters > 0 else "-"
 
@@ -229,11 +236,6 @@ def admprofile():
     return render_template('admprofile.html', user=user_data, )
 
 
-@app.route('/recomendation')
-def recomendation():
-    return "<h2>recomendation</h2>"
-
-
 
 @app.route('/add_userchar', methods=['GET', 'POST'])
 def add_userchar():
@@ -289,10 +291,115 @@ def add_userchar():
     return render_template('userchar_add.html')
 
 
-
-@app.route('/plandiet')
+# Rute untuk halaman diet plan
+@app.route('/plandiet', methods=['GET', 'POST'])
 def plandiet():
-     return render_template('plandiet.html',active_page='plandiet')
+    filtered_data = pd.read_csv('tkpi_filtered.csv')
+    userid = session.get('userid')  # Get the logged-in user's ID
+
+    if not userid:
+        return redirect(url_for('login'))  # If no user is logged in, redirect to login page
+
+    # Fetch user data from the database
+    user_data = get_user_data_by_id(userid)
+
+    if user_data:
+        gender = user_data['gender']
+        age = user_data['age']
+        weight = user_data['weight']
+        height = user_data['height']
+        activity = user_data['activity']
+        goal = user_data['goal']
+    else:
+        gender, age, weight, height, activity, goal = '', '', '', '', '', ''
+
+    if request.method == 'POST':
+        # Get data from the form that is submitted
+        gender = request.form['gender']
+        age = int(request.form['age'])
+        weight = float(request.form['weight'])
+        height = float(request.form['height'])
+        activity = request.form['activity']
+        goal = request.form['goal']
+
+        user_input = {
+            'gender': gender,
+            'age': age,
+            'weight': weight,
+            'height': height,
+            'activity': activity,
+            'goal': goal
+        }
+
+        # Calculate BMR and adjust for the goal
+        bmr = calculate_bmr(user_input['gender'], user_input['age'], user_input['weight'], user_input['height'], user_input['activity'])
+        bmr_adjusted = adjust_bmr_for_goal(bmr, user_input['goal'])
+
+        # Get meal recommendations
+        breakfast, lunch, dinner, snacks = recommend_balanced_meals(bmr_adjusted, filtered_data, rf_model)
+
+        # Drop unnecessary columns if they exist in DataFrame
+        breakfast = breakfast[['NAMA BAHAN', 'ENERGI', 'PROTEIN', 'KH', 'SERAT']]
+        lunch = lunch[['NAMA BAHAN', 'ENERGI', 'PROTEIN', 'KH', 'SERAT']]
+        dinner = dinner[['NAMA BAHAN', 'ENERGI', 'PROTEIN', 'KH', 'SERAT']]
+        snacks = snacks[['NAMA BAHAN', 'ENERGI', 'PROTEIN', 'KH', 'SERAT']]
+
+        result = {
+            'bmr': bmr,
+            'goal': user_input['goal'],
+            'bmr_adjusted': bmr_adjusted,
+            'breakfast': breakfast,
+            'lunch': lunch,
+            'dinner': dinner,
+            'snacks': snacks,
+        }
+
+        return render_template('plandiet.html', active_page='plandiet', result=result)
+
+    return render_template('plandiet.html', active_page='plandiet', gender=gender, age=age, weight=weight, height=height, activity=activity, goal=goal)
+
+
+# Function to fetch user data from the database based on the user_id
+def get_user_data_by_id(user_id):
+    cursor = mysql.connection.cursor()
+    query = "SELECT gender, age, weight, height, activity, goal FROM usercharacteristics WHERE userid = %s"
+    cursor.execute(query, (user_id,))
+    user_data = cursor.fetchone()  # Fetch the first matching record
+    cursor.close()
+
+    if user_data:
+        # The columns returned from the query are ordered as gender, age, weight, height, activity, goal
+        return {
+            'gender': user_data[0],  # gender is at index 0
+            'age': user_data[1],      # age is at index 1
+            'weight': user_data[2],   # weight is at index 2
+            'height': user_data[3],   # height is at index 3
+            'activity': user_data[4], # activity is at index 4
+            'goal': user_data[5]     # goal is at index 5
+        }
+    else:
+        return None
+
+
+# API endpoint untuk menerima input dari pengguna
+@app.route('/api/recomendation', methods=['POST'])
+def api_recomendation():
+    # Mengambil data JSON yang dikirim dari client (misal melalui Postman atau fetch API)
+    data = request.get_json()
+    
+    user_input = data.get('user_input')  # Ambil input data pengguna
+    userid = session.get('userid')  # Dapatkan user_id dari session
+
+    if not user_input or not userid:
+        return jsonify({"error": "Missing input or user ID"}), 400
+
+    # Panggil fungsi dari recommendation.py
+    result = recomendation.process_recommendation(user_input, userid)
+
+    return jsonify({"recommendation": result})
+
+
+    
 
 @app.route('/tracker', methods=['GET', 'POST'])
 def tracker():
