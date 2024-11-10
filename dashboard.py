@@ -4,11 +4,13 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from flask_ckeditor import CKEditor
 from datetime import datetime
-from recomendation import calculate_bmr, adjust_bmr_for_goal, recommend_balanced_meals  
+from recomendation import calculate_bmr, adjust_calories_for_goal, calculate_tdee, recommend_balanced_meals  
 import os
 import json
 import pandas as pd
 import pickle
+import joblib
+from joblib import load
 
 app = Flask(__name__)
 
@@ -34,9 +36,7 @@ app.config['CKEDITOR_PKG_TYPE'] = 'standard'
 app.config['CKEDITOR_SERVE_LOCAL'] = False
 app.config['CKEDITOR_CDN'] = "https://cdn.ckeditor.com/4.25.0/standard/ckeditor.js"
 
-with open(r'C:\Users\USER\dietrecomendation\rf_model.pkl', 'rb') as model_file:
-    rf_model = pickle.load(model_file)
-    print("Model berhasil dimuat")
+rf_model = joblib.load('C:\\Users\\USER\\dietrecomendation\\rf_model.joblib')
 
 @app.route('/')
 def index():
@@ -331,12 +331,18 @@ def plandiet():
             'goal': goal
         }
 
-        # Calculate BMR and adjust for the goal
-        bmr = calculate_bmr(user_input['gender'], user_input['age'], user_input['weight'], user_input['height'], user_input['activity'])
-        bmr_adjusted = adjust_bmr_for_goal(bmr, user_input['goal'])
+        # Calculate BMR and TDEE
+        bmr = calculate_bmr(user_input['gender'], user_input['age'], user_input['weight'], user_input['height'])
+        tdee = calculate_tdee(bmr, user_input['activity'])
+        adjusted_bmr = adjust_calories_for_goal(tdee, bmr, user_input['goal'])
+
+        # Ensure all values are defined
+        bmr = bmr or 0
+        tdee = tdee or 0
+        adjusted_bmr = adjusted_bmr or 0
 
         # Get meal recommendations
-        breakfast, lunch, dinner, snacks = recommend_balanced_meals(bmr_adjusted, filtered_data, rf_model)
+        breakfast, lunch, dinner, snacks = recommend_balanced_meals(tdee, bmr, goal, filtered_data)
 
         # Drop unnecessary columns if they exist in DataFrame
         breakfast = breakfast[['NAMA BAHAN', 'ENERGI', 'PROTEIN', 'KH', 'SERAT']]
@@ -346,8 +352,9 @@ def plandiet():
 
         result = {
             'bmr': bmr,
+            'tdee': tdee,
             'goal': user_input['goal'],
-            'bmr_adjusted': bmr_adjusted,
+            'bmr_adjusted': adjusted_bmr,
             'breakfast': breakfast,
             'lunch': lunch,
             'dinner': dinner,
@@ -357,7 +364,6 @@ def plandiet():
         return render_template('plandiet.html', active_page='plandiet', result=result)
 
     return render_template('plandiet.html', active_page='plandiet', gender=gender, age=age, weight=weight, height=height, activity=activity, goal=goal)
-
 
 # Function to fetch user data from the database based on the user_id
 def get_user_data_by_id(user_id):

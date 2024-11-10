@@ -149,26 +149,28 @@
                             <h5>Hasil Plan Diet:</h5>
                             <div class="divider my-4"></div>
                             {% if result %}
-                                <p><strong>BMR:</strong> {{ result.bmr|round(2) }} kalori</p>
-                                <p><strong>Tujuan:</strong> {{ result.goal }}</p>
-                                <p><strong>BMR dibutuhkan berdasarkan tujuan diet:</strong> {{ result.bmr_adjusted|round(2) }} kalori</p>
+                              <p><strong>BMR:</strong> {{ result.bmr|default(0)|round(2) }} kalori</p>
+                              <p><strong>TDEE:</strong> {{ result.tdee|default(0)|round(2) }} kalori</p>
+                              <p><strong>Tujuan:</strong> {{ result.goal }}</p>
+                              <p><strong>Adjusted BMR (Based on Goal):</strong> {{ result.bmr_adjusted|default(0)|round(2) }} kalori</p>
 
-                                <h4>Rekomendasi Makanan:</h4>
+                              <h4>Rekomendasi Makanan:</h4>
 
-                                <h5>Breakfast:</h5>
-                                {{ result.breakfast.to_html(classes='table table-bordered table-striped table-hover')|safe }}
+                              <h5>Breakfast:</h5>
+                              {{ result.breakfast.to_html(classes='table table-bordered table-striped table-hover')|safe }}
 
-                                <h5>Lunch:</h5>
-                                {{ result.lunch.to_html(classes='table table-bordered table-striped table-hover')|safe }}
+                              <h5>Lunch:</h5>
+                              {{ result.lunch.to_html(classes='table table-bordered table-striped table-hover')|safe }}
 
-                                <h5>Dinner:</h5>
-                                {{ result.dinner.to_html(classes='table table-bordered table-striped table-hover')|safe }}
+                              <h5>Dinner:</h5>
+                              {{ result.dinner.to_html(classes='table table-bordered table-striped table-hover')|safe }}
 
-                                <h5>Snacks (Buah-buahan):</h5>
-                                {{ result.snacks.to_html(classes='table table-bordered table-striped table-hover')|safe }}
+                              <h5>Snacks (Buah-buahan):</h5>
+                              {{ result.snacks.to_html(classes='table table-bordered table-striped table-hover')|safe }}
+                          {% endif %}
 
-                                
-                            {% endif %}
+    
+
                         </div>
                         </div>
             
