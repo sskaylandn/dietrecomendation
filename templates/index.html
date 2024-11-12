@@ -71,7 +71,7 @@
 			<div class="collapse navbar-collapse" id="navbarmain">
 				<ul class="navbar-nav ml-auto">
 					<li class="nav-item active"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
-					<li class="nav-item"><a class="nav-link" href="{{ url_for('article') }}">Hidup Sehat</a></li>
+					<li class="nav-item"><a class="nav-link" href="{{ url_for('tarticle') }}">Hidup Sehat</a></li>
 					<li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
 
 					
@@ -160,8 +160,8 @@
 			<div class="col-lg-4">
 				<div class="about-content pl-4 mt-4 mt-lg-0">
 					<h2 class="title-color">Isi <br>Piringku</h2>
-					<p class="mt-4 mb-5">Isi Piringku merupakan pedoman yang disusun oleh Kementerian Kesehatan mengampanyekan konsumsi makanan yang sesuai dengan pedoman gizi seimbang. Dalam satu piring setiap kali makan, setengah piring diisi dengan sayur dan buah, sedangkan setengah lainnya diisi dengan makanan pokok dan lauk pauk.</p>
-					<a href="isipiringku.html" class="btn btn-main-2 btn-round-full btn-icon">Selengkapnya<i class="icofont-simple-right ml-3"></i></a>
+					<p class="mt-4 mb-5">Pemerintah menggencarkan kampanye Isi Piringku sebagai pengganti konsep empat sehat lima sempurna yang selama ini dikenal masyarakat. Isi Piringku merupakan pedoman agar masyarakat paham pentingnya makan sehat dengan gizi seimbang. Selama ini pemahaman masyarakat mengenai nutrisi sangat penting sebab Indonesia tengah menghadapi beban ganda masalah gizi. Di satu sisi, Indonesia masih menghadapi masalah gizi kurang, stunting, dan kurus. Salah satu penyebab rendahnya kualitas kesehatan seseorang karena kurang makan sayur dan buah.</p>
+					<a href="{{ url_for('tdetail_article', id=1) }}" class="btn btn-main-2 btn-round-full btn-icon">Selengkapnya<i class="icofont-simple-right ml-3"></i></a>
 				</div>
 			</div>
 		</div>

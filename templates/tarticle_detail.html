@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <!-- Basic Page Needs
+  ================================================== -->
+  <meta charset="utf-8">
+  <title>Pola Hidup Sehat</title>
+
+  <!-- Mobile Specific Metas
+  ================================================== -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="Health Care Medical Html5 Template">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="author" content="Themefisher">
+  <meta name="generator" content="Themefisher Novena HTML Template v1.0">
+  
+  <!-- theme meta -->
+  <meta name="theme-name" content="novena" />
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" type="image/x-icon"  href="{{ url_for('static', filename='/images/favicon.png') }}" />
+
+  <!-- 
+  Essential stylesheets
+  =====================================-->
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/bootstrap/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/icofont/icofont.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/slick-carousel/slick/slick.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/slick-carousel/slick/slick-theme.css') }}">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body id="top">
+
+<header>
+	<div class="header-top-bar">
+		<div class="container">
+			<div class="row align-items-center">
+				<div class="col-lg-6">
+					<ul class="top-bar-info list-inline-item pl-0 mb-0">
+						<li class="list-inline-item"><a href="mailto:support@gmail.com"><i ></i></a></li>
+						<li class="list-inline-item"><i ></i> </li>
+					</ul>
+				</div>
+				<div class="col-lg-6">
+					<div class="text-lg-right top-right-bar mt-2 mt-lg-0">
+						<a href="tel:+23-345-67890">
+							<span></span>
+							<span class="h4"></span>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<nav class="navbar navbar-expand-lg navigation" id="navbar">
+		<div class="container">
+			<a class="navbar-brand" href="index.html">
+				<img src="images/logo.png" alt="" class="img-fluid">
+			</a>
+
+			<button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarmain"
+				aria-controls="navbarmain" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="icofont-navigation-menu"></span>
+			</button>
+
+			<div class="collapse navbar-collapse" id="navbarmain">
+				<ul class="navbar-nav ml-auto">
+                    
+                        <li class="nav-item active"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('tarticle') }}">Hidup Sehat</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+                        
+                        
+                    </ul>
+                    
+					
+				</ul>
+			</div>
+		</div>
+	</nav>
+</header>
+
+
+<!-- Slider Start -->
+<section class="section blog-wrap">
+	<div class="container">
+	  <div class="row">
+		<div class="col-lg-8">
+		  <div class="row">
+	  
+  
+	  <div class="col-lg-12 col-md-12 mb-5">
+		  <div class="blog-item">
+			  <div class="blog-thumb">
+				  
+			  </div>
+        <div class="col-lg-8">
+          <div class="row">
+    <div class="col-lg-12 mb-5">
+      <div class="single-blog-item">
+        <img src="images/blog/blog-1.jpg" alt="" class="img-fluid">
+  
+        <div class="blog-item-content mt-5">
+          <div class="blog-item-meta mb-3">
+            <span class="text-color-2 text-capitalize mr-3"><i class="icofont-book-mark mr-2"></i> {{ article[4] }}</span>
+            <span class="text-muted text-capitalize mr-3"><i class="icofont-pencil-alt-5 mr-2"></i>{{ article[5] }}</span>
+            <span class="text-black text-capitalize mr-3"><i class="icofont-calendar mr-2"></i> {{ article[3] }}</span>
+          </div>
+  
+          <h2 class="mb-4 text-md"><a href="#">{{ article[1] }}</a></h2>
+  
+          <p class="lead mb-4">{{ article[2]|safe }}</p>
+          
+        </div>
+      </div>
+    </div>
+  
+  </div>
+        </div>
+
+
+		  </div>
+	  </div>
+	  		
+	  
+  </div>
+		</div>
+		<div class="col-lg-4">
+		  <div class="sidebar-wrap pl-lg-4 mt-5 mt-lg-0">
+        <div class="sidebar-widget search mb-3">
+          <h5>Search Here</h5>
+          <form action="{{ url_for('uarticle') }}" method="GET" class="search-form">
+            <div class="input-group">
+              <input type="text" name="search" class="form-control" placeholder="Search by title, author, or category" value="{{ search }}">
+              </div>
+              <br>
+              <div class="input-group">
+              <button class="btn btn-main btn-icon btn-round-full icofont-search" type="submit">
+                
+              </button>
+            </div>
+          </form>
+        </div>
+  
+	  <div class="sidebar-widget category mb-3">
+		  <h5 class="mb-4">Kategori</h5>
+  
+		  <ul class="list-unstyled">
+			<li class="align-items-center">
+			  <a href="#">Berita</a>
+			  <span>({{ jumlahkategori.get('berita', 0) }})</span>
+			</li>
+			<li class="align-items-center">
+			  <a href="#">Pengetahuan</a>
+			  <span>({{ jumlahkategori.get('pengetahuan', 0) }})</span>
+			</li>
+			<li class="align-items-center">
+			  <a href="#">Imbauan</a>
+			  <span>({{ jumlahkategori.get('imbauan', 0) }})</span>
+			</li>
+			
+		  </ul>
+	  </div>
+  
+  
+	  
+  
+		</div>
+	  </div>
+	</div>
+  </section>
+<!-- footer Start -->
+<footer class="footer section gray-bg">
+	<div class="container">
+        <div class="row">
+        </div>
+    
+        <div class="footer-btm py-4 mt-5">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-lg-12 text-center">
+                    <div class="copyright">
+                        Pola Hidup Sehat - Kayla Shareta Andien
+                    </div>
+                </div>
+            </div>    
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4">
+                <a class="backtop scroll-top-to reveal" href="#top">
+                    <i class="icofont-long-arrow-up"></i>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</footer>
+
+   
+
+    <!-- 
+    Essential Scripts
+    =====================================-->
+    <script src="plugins/jquery/jquery.js"></script>
+    <script src="plugins/bootstrap/bootstrap.min.js"></script>
+    <script src="plugins/slick-carousel/slick/slick.min.js"></script>
+    <script src="plugins/shuffle/shuffle.min.js"></script>
+
+    <!-- Google Map -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAkeLMlsiwzp6b3Gnaxd86lvakimwGA6UA"></script>
+    <script src="plugins/google-map/gmap.js"></script>
+    
+    <script src="js/script.js"></script>
+
+  </body>
+  </html>

@@ -634,8 +634,119 @@ def detail_article(id):
         flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
         return redirect(url_for('login'))
 
+@app.route('/tarticle')
+def tarticle():
+    
+        # Ambil parameter pencarian dan kategori dari query string
+        search = request.args.get('search', '')  # Jika tidak ada pencarian, defaultnya kosong
+        category = request.args.get('category', '')  # Ambil kategori dari URL
+        page = request.args.get('page', 1, type=int)  # Ambil nomor halaman, default ke halaman 1
+        per_page = 10  # Jumlah artikel per halaman
 
+        # Mulai membangun query untuk filter berdasarkan title, author, category
+        cur = mysql.connection.cursor()
 
+        query = "SELECT * FROM article WHERE 1=1"
+        params = []
+
+        # Filter berdasarkan pencarian
+        if search:
+            query += " AND (title LIKE %s OR content LIKE %s OR author LIKE %s OR category LIKE %s)"
+            search_pattern = '%' + search + '%'
+            params.extend([search_pattern, search_pattern, search_pattern, search_pattern])
+
+        # Filter berdasarkan kategori (jika ada)
+        if category:
+            query += " AND category = %s"
+            params.append(category)
+
+        # Pagination (LIMIT dan OFFSET)
+        query += " ORDER BY created ASC LIMIT %s OFFSET %s"
+        params.append(per_page)
+        params.append((page - 1) * per_page)
+
+        # Eksekusi query dengan parameter pencarian dan kategori
+        cur.execute(query, tuple(params))
+        tampilartikel = cur.fetchall()
+
+        # Ambil jumlah total artikel berdasarkan filter pencarian dan kategori
+        count_query = "SELECT COUNT(*) FROM article WHERE 1=1"
+        count_params = []
+
+        # Filter pencarian
+        if search:
+            count_query += " AND (title LIKE %s OR content LIKE %s OR author LIKE %s OR category LIKE %s)"
+            count_params.extend([search_pattern, search_pattern, search_pattern, search_pattern])
+
+        # Filter kategori
+        if category:
+            count_query += " AND category = %s"
+            count_params.append(category)
+
+        cur.execute(count_query, tuple(count_params))
+        total_data = cur.fetchone()[0]
+
+        total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
+
+        cur.close()
+
+        # Mengambil kategori artikel untuk sidebar
+        cur = mysql.connection.cursor()
+        cur.execute("""SELECT category, COUNT(*) as count FROM article GROUP BY category""")
+        kategori_count = cur.fetchall()
+        cur.close()
+
+        # Mengubah kategori_count menjadi dictionary
+        jumlahkategori = {row[0]: row[1] for row in kategori_count}
+        
+        # Membuat daftar artikel dengan potongan kalimat pertama
+        dataartikel = []
+        for row in tampilartikel:
+            first_sentence = row[2].split('.')[0] + '.' if '.' in row[2] else row[2]
+            dataartikel.append({
+                "id": row[0],
+                "title": row[1],
+                "first_sentence": first_sentence,
+                "created": row[3],
+                "author": row[5]
+            })
+
+        return render_template(
+            'tarticle.html',
+            active_page='tarticle',
+            dataartikel=dataartikel,
+            jumlahkategori=jumlahkategori,
+            search=search,
+            category=category,
+            page=page,
+            total_pages=total_pages
+        )
+   
+
+    
+@app.route('/tdetail_article/<int:id>')
+def tdetail_article(id):
+   
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM article WHERE id = %s", (id,))
+        tampilartikel = cur.fetchone()
+        cur.execute("""
+            SELECT category, COUNT(*) as count 
+            FROM article 
+            GROUP BY category
+        """)
+        kategori_count = cur.fetchall()
+        
+        cur.close()
+        jumlahkategori = {row[0]: row[1] for row in kategori_count}
+        
+        
+        if tampilartikel:
+            return render_template('tarticle_detail.html', active_page='tarticle',  article=tampilartikel, jumlahkategori=jumlahkategori)
+        else:
+            flash('Artikel tidak ditemukan.', 'warning')
+            return redirect(url_for('tarticle'))
+    
 
 @app.route('/urecipe')
 def urecipe():

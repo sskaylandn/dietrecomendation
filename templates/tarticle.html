@@ -71,18 +71,9 @@
 			<div class="collapse navbar-collapse" id="navbarmain">
 				<ul class="navbar-nav ml-auto">
                     
-					<li class="nav-item"><a class="nav-link" href="{{ url_for('user_dashboard') }}">Home</a></li>
-                    <li class="nav-item {% if active_page == 'plandiet' %}active{% endif %}" ><a class="nav-link" href="{{ url_for('plandiet') }}">Perencanaan Diet</a></li>
-                    <li class="nav-item {% if active_page == 'tracker' %}active{% endif %}"><a class="nav-link" href="{{ url_for('tracker') }}">Tracker Diet</a></li>
-                    <li class="nav-item {% if active_page == 'urecipe' %}active{% endif %}"><a class="nav-link" href="{{ url_for('urecipe') }}">Resep Masakan</a></li>
-                    <li class="nav-item {% if active_page == 'uarticle' %}active{% endif %}"><a class="nav-link" href="{{ url_for('uarticle') }}">Hidup Bersih dan Sehat</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="{{ url_for('profile') }}" id="dropdown05" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hello, {{session.email}} <i class="icofont-thin-down"></i></a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdown05">
-                            <li><a class="dropdown-item" href="{{ url_for('profile') }}">Profile</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
-                        </ul>
-                    </li>
+					<li class="nav-item active"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+					<li class="nav-item"><a class="nav-link" href="{{ url_for('tarticle') }}">Hidup Sehat</a></li>
+					<li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
                     
 					
 				</ul>
@@ -116,10 +107,10 @@
 						</span>
 					</div> 
 					<h2 class="mt-3 mb-3">
-						<a href="{{ url_for('detail_article', id=row.id) }}">{{ row.title }}</a>
+						<a href="{{ url_for('tdetail_article', id=row.id) }}">{{ row.title }}</a>
 					</h2>
 					<p class="mb-4">{{ row.first_sentence|safe }}</p>
-					<a href="{{ url_for('detail_article', id=row.id) }}" target="_blank" class="btn btn-main btn-icon btn-round-full">
+					<a href="{{ url_for('tdetail_article', id=row.id) }}" target="_blank" class="btn btn-main btn-icon btn-round-full">
 						Read More <i class="icofont-simple-right ml-2"></i>
 					</a>
 				</div>
@@ -136,7 +127,7 @@
         <div class="nav-links">
             <!-- Tombol Previous Page -->
             {% if page > 1 %}
-                <a class="page-numbers" href="{{ url_for('uarticle', page=page-1, search=search, category=category_filter, author=author_filter) }}">
+                <a class="page-numbers" href="{{ url_for('tarticle', page=page-1, search=search, category=category_filter, author=author_filter) }}">
                     <i class="icofont-thin-double-left"></i>
                 </a>
             {% else %}
@@ -145,14 +136,14 @@
 
             <!-- Daftar Halaman -->
             {% for p in range(1, total_pages + 1) %}
-                <a class="page-numbers {% if p == page %}current{% endif %}" href="{{ url_for('uarticle', page=p, search=search, category=category_filter, author=author_filter) }}">
+                <a class="page-numbers {% if p == page %}current{% endif %}" href="{{ url_for('tarticle', page=p, search=search, category=category_filter, author=author_filter) }}">
                     {{ p }}
                 </a>
             {% endfor %}
 
             <!-- Tombol Next Page -->
             {% if page < total_pages %}
-                <a class="page-numbers" href="{{ url_for('uarticle', page=page+1, search=search, category=category_filter, author=author_filter) }}">
+                <a class="page-numbers" href="{{ url_for('tarticle', page=page+1, search=search, category=category_filter, author=author_filter) }}">
                     <i class="icofont-thin-double-right"></i>
                 </a>
             {% else %}
@@ -167,7 +158,7 @@
 		  <div class="sidebar-wrap pl-lg-4 mt-5 mt-lg-0">
 			<div class="sidebar-widget search mb-3">
 				<h5>Search Here</h5>
-				<form action="{{ url_for('uarticle') }}" method="GET" class="search-form">
+				<form action="{{ url_for('tarticle') }}" method="GET" class="search-form">
 					<div class="input-group">
 						<input type="text" name="search" class="form-control" placeholder="Search by title, author, or category" value="{{ search }}">
 					  </div>
@@ -185,15 +176,15 @@
 			
 				<ul class="list-unstyled">
 					<li class="align-items-center">
-						<a href="{{ url_for('uarticle', category='berita') }}">Berita</a>
+						<a href="{{ url_for('tarticle', category='berita') }}">Berita</a>
 						<span>({{ jumlahkategori.get('berita', 0) }})</span>
 					</li>
 					<li class="align-items-center">
-						<a href="{{ url_for('uarticle', category='pengetahuan') }}">Pengetahuan</a>
+						<a href="{{ url_for('tarticle', category='pengetahuan') }}">Pengetahuan</a>
 						<span>({{ jumlahkategori.get('pengetahuan', 0) }})</span>
 					</li>
 					<li class="align-items-center">
-						<a href="{{ url_for('uarticle', category='imbauan') }}">Imbauan</a>
+						<a href="{{ url_for('tarticle', category='imbauan') }}">Imbauan</a>
 						<span>({{ jumlahkategori.get('imbauan', 0) }})</span>
 					</li>
 				</ul>
