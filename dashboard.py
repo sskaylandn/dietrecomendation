@@ -59,9 +59,9 @@ def user_dashboard():
         cursor.execute("SELECT datesubmit, weight FROM tracker WHERE userid = %s ORDER BY datesubmit ASC", [userid])
         weightdata = cursor.fetchall()
 
-        # Siapkan data untuk grafik berat badan
-        labels = [row[0].strftime('%d-%m-%Y') for row in weightdata]   # Mengambil tanggal dan memformatnya
-        weight_values = [row[1] for row in weightdata]  # Mengambil berat badan dari data
+        #grafik
+        labels = [row[0].strftime('%d-%m-%Y') for row in weightdata]  
+        weight_values = [row[1] for row in weightdata]  
 
         data_exists = bool(user_data)
         data_dict = {}
@@ -72,13 +72,11 @@ def user_dashboard():
             gender = user_data[2]
             age = user_data[3]
             goal = user_data[4]
-            activity = user_data[5]  # Ambil data aktivitas dari database
+            activity = user_data[5]  
 
-            # Hitung BMI 
             height_in_meters = height / 100  
             bmi = weight / (height_in_meters ** 2) if height_in_meters > 0 else "-"
 
-            # Hitung BMR berdasarkan jenis kelamin
             if gender == 'pria':
                 bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
             elif gender == 'wanita':
@@ -86,7 +84,6 @@ def user_dashboard():
             else:
                 bmr = "-"
 
-            # Kamus untuk faktor aktivitas
             activity_multipliers = {
                 'sedentary': 1.3,
                 'lowactive': 1.5,
@@ -94,19 +91,19 @@ def user_dashboard():
                 'veryactive': 2
             }
 
-            # Dapatkan multiplier berdasarkan data aktivitas dari database
-            multiplier = activity_multipliers.get(activity.lower(), 1)  # Default ke 1 jika data tidak cocok
+            # multiplier berdasarkan aktivitas 
+            multiplier = activity_multipliers.get(activity.lower(), 1)  
             tdee = bmr * multiplier if isinstance(bmr, (int, float)) else "-"
 
-            # Hitung selisih berat badan antara tanggal pertama dan terakhir jika ada data
+            # selisih berat badan 
             if weightdata:
-                oldest_date = weightdata[0][0].strftime('%d-%m-%Y')  # Tanggal pertama
-                latest_date = weightdata[-1][0].strftime('%d-%m-%Y')  # Tanggal terakhir
-                weight_difference = round(weightdata[-1][1] - weightdata[0][1], 2)  # Selisih berat badan
+                oldest_date = weightdata[0][0].strftime('%d-%m-%Y')  
+                latest_date = weightdata[-1][0].strftime('%d-%m-%Y')  
+                weight_difference = round(weightdata[-1][1] - weightdata[0][1], 2)  
             else:
                 oldest_date = latest_date = weight_difference = None
 
-            # Isi data_dict dengan data pengguna
+            # data pengguna
             data_dict = {
                 "height": height or "-",
                 "weight": weight or "-",
@@ -117,14 +114,14 @@ def user_dashboard():
                 "activity": activity or "-",
             }
 
-            # Hanya masukkan `weight_difference` jika ada data di tracker
+            
             if weightdata:
                 data_dict["weight_difference"] = weight_difference
                 data_dict["oldest_date"] = oldest_date
                 data_dict["latest_date"] = latest_date
 
         else:
-            # Pesan jika data tidak ada
+           
             no_data_message = "Belum ada data tersedia saat ini. Silakan tambahkan data Anda melalui tombol di bawah ini:"
             add_userchar = url_for('add_userchar')  
 
@@ -304,14 +301,94 @@ def plandiet():
     user_data = get_user_data_by_id(userid)
 
     if user_data:
-        gender = user_data['gender']
-        age = user_data['age']
-        weight = user_data['weight']
-        height = user_data['height']
-        activity = user_data['activity']
-        goal = user_data['goal']
+            gender = user_data['gender']
+            age = user_data['age']
+            weight = user_data['weight']
+            height = user_data['height']
+            activity = user_data['activity']
+            goal = user_data['goal']
     else:
-        gender, age, weight, height, activity, goal = '', '', '', '', '', ''
+            gender, age, weight, height, activity, goal = '', '', '', '', '', ''
+
+
+    # Get active diet plan from the database
+    active_plan = get_active_diet_plan(userid)
+    inactive_plans = get_inactive_diet_plans_by_user(userid)  
+
+    # Membuat dictionary kosong untuk setiap jenis makanan
+    meal_dict = {
+        'breakfast': {},
+        'lunch': {},
+        'dinner': {},
+        'snacks': {}
+    }
+
+    if inactive_plans:
+        for plan in inactive_plans:
+            plan_id = plan[0]  # ID plan
+            
+            # Mengambil data sarapan
+            breakfast_data = plan[2]  # Data sarapan
+            if breakfast_data:
+                try:
+                    meal_dict['breakfast'][plan_id] = json.loads(breakfast_data)
+                except json.JSONDecodeError:
+                    meal_dict['breakfast'][plan_id] = []  # Handle error jika format JSON rusak
+            else:
+                meal_dict['breakfast'][plan_id] = []  # Jika tidak ada sarapan, set kosong
+            
+            # Mengambil data makan siang
+            lunch_data = plan[3]  # Data makan siang
+            if lunch_data:
+                try:
+                    meal_dict['lunch'][plan_id] = json.loads(lunch_data)
+                except json.JSONDecodeError:
+                    meal_dict['lunch'][plan_id] = []  # Handle error jika format JSON rusak
+            else:
+                meal_dict['lunch'][plan_id] = []  # Jika tidak ada makan siang, set kosong
+            
+            # Mengambil data makan malam
+            dinner_data = plan[4]  # Data makan malam
+            if dinner_data:
+                try:
+                    meal_dict['dinner'][plan_id] = json.loads(dinner_data)
+                except json.JSONDecodeError:
+                    meal_dict['dinner'][plan_id] = []  # Handle error jika format JSON rusak
+            else:
+                meal_dict['dinner'][plan_id] = []  # Jika tidak ada makan malam, set kosong
+            
+            # Mengambil data camilan
+            snacks_data = plan[5]  # Data camilan
+            if snacks_data:
+                try:
+                    meal_dict['snacks'][plan_id] = json.loads(snacks_data)
+                except json.JSONDecodeError:
+                    meal_dict['snacks'][plan_id] = []  # Handle error jika format JSON rusak
+            else:
+                meal_dict['snacks'][plan_id] = []  # Jika tidak ada camilan, set kosong
+    else:
+        # Jika tidak ada inactive_plans, set meal_dict ke kosong
+        meal_dict = {
+            'breakfast': {},
+            'lunch': {},
+            'dinner': {},
+            'snacks': {}
+        }
+
+
+
+    if active_plan:
+        bmr = active_plan['bmr']
+        tdee = active_plan['tdee']
+        adjustedbmr = active_plan['adjustedbmr']
+        breakfast = pd.read_json(active_plan['breakfast'])
+        lunch = pd.read_json(active_plan['lunch'])
+        dinner = pd.read_json(active_plan['dinner'])
+        snacks = pd.read_json(active_plan['snacks'])
+        goal = active_plan['goal']
+    else:
+        # If no active plan, set these values to None
+        bmr = tdee = adjustedbmr = breakfast = lunch = dinner = snacks = goal = None
 
     if request.method == 'POST':
         # Get data from the form that is submitted
@@ -334,15 +411,17 @@ def plandiet():
         # Calculate BMR and TDEE
         bmr = calculate_bmr(user_input['gender'], user_input['age'], user_input['weight'], user_input['height'])
         tdee = calculate_tdee(bmr, user_input['activity'])
-        adjusted_bmr = adjust_calories_for_goal(tdee, bmr, user_input['goal'])
+        adjustedbmr = adjust_calories_for_goal(tdee, bmr, user_input['goal'])
+
 
         # Ensure all values are defined
         bmr = bmr or 0
         tdee = tdee or 0
-        adjusted_bmr = adjusted_bmr or 0
+        adjustedbmr = adjustedbmr or 0
 
         # Get meal recommendations
         breakfast, lunch, dinner, snacks = recommend_balanced_meals(tdee, bmr, goal, filtered_data)
+
 
         # Drop unnecessary columns if they exist in DataFrame
         breakfast = breakfast[['NAMA BAHAN', 'ENERGI', 'PROTEIN', 'KH', 'SERAT']]
@@ -350,20 +429,113 @@ def plandiet():
         dinner = dinner[['NAMA BAHAN', 'ENERGI', 'PROTEIN', 'KH', 'SERAT']]
         snacks = snacks[['NAMA BAHAN', 'ENERGI', 'PROTEIN', 'KH', 'SERAT']]
 
+        # Update any existing active plan diet to inactive
+        
+
+       # Extract only the 'NAMA BAHAN' from the DataFrames (ingredient names only)
+        breakfast_names = breakfast['NAMA BAHAN'].tolist()
+        lunch_names = lunch['NAMA BAHAN'].tolist()
+        dinner_names = dinner['NAMA BAHAN'].tolist()
+        snack_names = snacks['NAMA BAHAN'].tolist()
+
+        deactivate_old_plans(userid)
+
+        # Store only the names in the database as JSON
+        insert_new_plandiet(userid, json.dumps(breakfast_names), json.dumps(lunch_names), json.dumps(dinner_names), json.dumps(snack_names), bmr, tdee, adjustedbmr)
+
+
+        # Prepare the result to render the template
         result = {
             'bmr': bmr,
             'tdee': tdee,
             'goal': user_input['goal'],
-            'bmr_adjusted': adjusted_bmr,
+            'adjustedbmr': adjustedbmr,
             'breakfast': breakfast,
             'lunch': lunch,
             'dinner': dinner,
             'snacks': snacks,
         }
 
-        return render_template('plandiet.html', active_page='plandiet', result=result)
+        return render_template('plandiet.html', active_page='plandiet', result=result, inactive_plans=inactive_plans, meal_dict=meal_dict)
 
-    return render_template('plandiet.html', active_page='plandiet', gender=gender, age=age, weight=weight, height=height, activity=activity, goal=goal)
+    return render_template('plandiet.html', active_page='plandiet',  gender=gender, age=age, weight=weight, height=height, activity=activity, goal=goal, bmr=bmr, tdee=tdee, adjustedbmr=adjustedbmr, breakfast=breakfast, lunch=lunch, dinner=dinner, snacks=snacks, inactive_plans=inactive_plans, meal_dict=meal_dict)
+
+
+
+def insert_new_plandiet(userid, breakfast, lunch, dinner, snacks, bmr, tdee, adjustedbmr):
+    # Get the current time in 'YYYY-MM-DD HH:MM:SS' format
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    # Query to insert the new diet plan, now including bmr, tdee, and adjustedbmr
+    query = """
+    INSERT INTO dietplan (userid, breakfast, lunch, dinner, snacks, bmr, tdee, adjustedbmr, created, updated, isActive)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """
+    
+    # Prepare the parameters for the query
+    params = (userid, breakfast, lunch, dinner, snacks, bmr, tdee, adjustedbmr, current_time, current_time, 1)
+
+    # Execute the query
+    execute_query(query, params)
+
+
+def deactivate_old_plans(userid):
+    # Get the current time for the 'updated' column
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    
+    # Query to deactivate old diet plans
+    query = """
+    UPDATE dietplan
+    SET isActive = 0, updated = %s
+    WHERE userid = %s AND isActive = 1
+    """
+    
+    # Execute the query with the current time and userid as parameters
+    execute_query(query, (current_time, userid))
+
+def get_active_diet_plan(userid):
+    query = """
+    SELECT bmr, tdee, adjustedbmr, breakfast, lunch, dinner, snacks
+    FROM dietplan
+    WHERE userid = %s AND isActive = 1
+    """
+    cursor = execute_query(query, (userid,))
+    
+    if cursor:
+        # Fetch one result
+        result = cursor.fetchone()
+        return result
+    else:
+        # Return None if no results are found
+        return None
+    
+def get_inactive_diet_plans_by_user(userid):
+    cur = mysql.connection.cursor()
+    
+    # Correct the SQL query by replacing 'HERE' with 'WHERE'
+    query = "SELECT * FROM dietplan WHERE userid = %s "
+    
+    # Execute the query
+    cur.execute(query, (userid,))
+    
+    # Fetch all results
+    tampilplan = cur.fetchall()
+    
+    # Close the cursor
+    cur.close()
+    
+    # If there are results, return them, otherwise return an empty list
+    if tampilplan:
+        return tampilplan  # List of diet plans
+    else:
+        return []  # No results found
+
+def execute_query(query, params):
+    # Get the DB connection from Flask-MySQLdb
+    cursor = mysql.connection.cursor()
+    cursor.execute(query, params)
+    mysql.connection.commit()
+    cursor.close()
 
 # Function to fetch user data from the database based on the user_id
 def get_user_data_by_id(user_id):
@@ -751,15 +923,13 @@ def tdetail_article(id):
 @app.route('/urecipe')
 def urecipe():
     if session.get('loggedin') and session.get('actor') == '2':
-        # Ambil nomor halaman dari query string (default ke halaman 1 jika tidak ada)
         page = request.args.get('page', 1, type=int)
-        per_page = 15  # Jumlah data per halaman
+        per_page = 15 
 
-        search_query = request.args.get('search', '')  # Ambil query pencarian
+        search_query = request.args.get('search', '') 
 
         cur = mysql.connection.cursor()
 
-        # Jika ada pencarian, sesuaikan query untuk mencari berdasarkan title
         if search_query:
             cur.execute("SELECT COUNT(*) FROM recipe WHERE title LIKE %s", ('%' + search_query + '%',))
         else:
@@ -770,7 +940,6 @@ def urecipe():
 
         offset = (page - 1) * per_page
 
-        # Jika ada pencarian, sesuaikan query untuk mencari berdasarkan title
         if search_query:
             cur.execute("SELECT * FROM recipe WHERE title LIKE %s ORDER BY title ASC LIMIT %s OFFSET %s", ('%' + search_query + '%', per_page, offset))
         else:
@@ -786,7 +955,7 @@ def urecipe():
             dataresep=tampilresep,
             page=page,
             total_pages=total_pages,
-            search=search_query  # Kirimkan query pencarian ke template
+            search=search_query  
         )
     else:
         flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
@@ -1113,6 +1282,19 @@ def upload_image():
         return jsonify({'uploaded': 1, 'url': url_for('static', filename=f'uploads/{filename}', _external=True)})
     
     return jsonify({'error': 'File not allowed'})
+
+@app.template_filter('from_json')
+def from_json_filter(json_str):
+    return json.loads(json_str)
+
+# Register the filter
+app.jinja_env.filters['from_json'] = from_json_filter
+
+def is_dataframe(value):
+    return isinstance(value, pd.DataFrame)
+
+# Register the filter with Jinja2
+app.jinja_env.filters['is_dataframe'] = is_dataframe
 
 if __name__ == '__main__':
     app.run(debug=True)
