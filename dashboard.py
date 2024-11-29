@@ -311,9 +311,10 @@ def plandiet():
             gender, age, weight, height, activity, goal = '', '', '', '', '', ''
 
 
-    # Get active diet plan from the database
+    page = request.args.get('page', 1, type=int)  # Get the page number from the request (default to 1)
+    per_page = 5  # Number of items per page (you can change this as needed)
     active_plan = get_active_diet_plan(userid)
-    inactive_plans = get_inactive_diet_plans_by_user(userid)  
+    inactive_plans, total_data, total_pages = get_inactive_diet_plans_by_user(userid, page, per_page)
 
     # Membuat dictionary kosong untuk setiap jenis makanan
     meal_dict = {
@@ -456,9 +457,9 @@ def plandiet():
             'snacks': snacks,
         }
 
-        return render_template('plandiet.html', active_page='plandiet', result=result, inactive_plans=inactive_plans, meal_dict=meal_dict)
+        return render_template('plandiet.html', active_page='plandiet', result=result, inactive_plans=inactive_plans, meal_dict=meal_dict, total_pages=total_pages, page=page)
 
-    return render_template('plandiet.html', active_page='plandiet',  gender=gender, age=age, weight=weight, height=height, activity=activity, goal=goal, bmr=bmr, tdee=tdee, adjustedbmr=adjustedbmr, breakfast=breakfast, lunch=lunch, dinner=dinner, snacks=snacks, inactive_plans=inactive_plans, meal_dict=meal_dict)
+    return render_template('plandiet.html', active_page='plandiet',  gender=gender, age=age, weight=weight, height=height, activity=activity, goal=goal, bmr=bmr, tdee=tdee, adjustedbmr=adjustedbmr, breakfast=breakfast, lunch=lunch, dinner=dinner, snacks=snacks, inactive_plans=inactive_plans, meal_dict=meal_dict, total_pages=total_pages, page=page )
 
 
 
@@ -509,26 +510,26 @@ def get_active_diet_plan(userid):
         # Return None if no results are found
         return None
     
-def get_inactive_diet_plans_by_user(userid):
+def get_inactive_diet_plans_by_user(userid, page, per_page):
     cur = mysql.connection.cursor()
-    
-    # Correct the SQL query by replacing 'HERE' with 'WHERE'
-    query = "SELECT * FROM dietplan WHERE userid = %s "
-    
-    # Execute the query
-    cur.execute(query, (userid,))
-    
-    # Fetch all results
+
+    # Menghitung total data dietplan untuk pengguna
+    cur.execute("SELECT COUNT(*) FROM dietplan WHERE userid = %s", (userid,))
+    total_data = cur.fetchone()[0]
+
+    # Menghitung total halaman
+    total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
+
+    # Menghitung offset berdasarkan halaman yang dipilih
+    offset = (page - 1) * per_page
+
+    # Ambil data dietplan berdasarkan pagination
+    cur.execute("SELECT * FROM dietplan WHERE userid = %s ORDER BY created ASC LIMIT %s OFFSET %s", (userid, per_page, offset))
     tampilplan = cur.fetchall()
-    
-    # Close the cursor
+
     cur.close()
-    
-    # If there are results, return them, otherwise return an empty list
-    if tampilplan:
-        return tampilplan  # List of diet plans
-    else:
-        return []  # No results found
+
+    return tampilplan, total_data, total_pages 
 
 def execute_query(query, params):
     # Get the DB connection from Flask-MySQLdb
@@ -984,29 +985,31 @@ def detail_recipe(id):
 @app.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
-        email = request.form['email']
+        email_or_username = request.form['email_or_username']  
         password = request.form['password']
 
         cursor = mysql.connection.cursor()
-        cursor.execute('SELECT * FROM user WHERE email=%s', (email,))
+
+        cursor.execute('SELECT * FROM user WHERE email=%s OR username=%s', (email_or_username, email_or_username))
         akun = cursor.fetchone()
 
         if akun is None:
             flash('Login Gagal, Cek Username/E-Mail Anda', 'danger')
-        elif not check_password_hash(akun[3], password):
+        elif not check_password_hash(akun[3], password):  
             flash('Login Gagal, Cek Password Anda', 'danger')
         else:
             session['loggedin'] = True
             session['email'] = akun[1]
             session['userid'] = akun[0]
             session['actor'] = akun[5]  
-            
+
             if session['actor'] == '2':  
                 return redirect(url_for('user_dashboard'))
-            elif session['actor'] == '1':  # Admin
+            elif session['actor'] == '1':  
                 return redirect(url_for('admin_dashboard'))
     
     return render_template('login.html')
+
 
 @app.route('/signup', methods=('GET', 'POST'))
 def signup():
@@ -1042,23 +1045,27 @@ def logout():
      return redirect(url_for('index'))
 
 
-@app.route('/forgetpass')
-def forgetpass():
-     return render_template('forgetpass.html')
-
 @app.route('/pengguna')
 def pengguna():
     if session.get('loggedin') and session.get('actor') == '1':
+        page = request.args.get('page', 1, type=int)
+        per_page = 10  
+        
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM user ORDER BY actor ASC")
+        cur.execute("SELECT COUNT(*) FROM user")
+        total_data = cur.fetchone()[0]
+        cur.close()
+
+        total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
+        offset = (page - 1) * per_page
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM user ORDER BY actor ASC LIMIT %s OFFSET %s", (per_page, offset))
         tampilpengguna = cur.fetchall()
         cur.close()
-                          
-        return render_template('pengguna.html',active_page='pengguna', datapengguna=tampilpengguna)
+        return render_template('pengguna.html',active_page='pengguna',datapengguna=tampilpengguna, total_pages=total_pages,page=page)
     else:
         flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
         return redirect(url_for('login'))
-    
 
 @app.route('/add_penguna', methods=('GET', 'POST'))
 def add_pengguna():
@@ -1115,15 +1122,26 @@ def delete_pengguna(userid):
 @app.route('/recipe')
 def recipe():
     if session.get('loggedin') and session.get('actor') == '1':
+        page = request.args.get('page', 1, type=int)
+        per_page = 10 
+        
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM recipe ORDER BY title ASC")
+        cur.execute("SELECT COUNT(*) FROM recipe")
+        total_data = cur.fetchone()[0]
+        cur.close()
+
+        total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
+        offset = (page - 1) * per_page
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM recipe ORDER BY title ASC LIMIT %s OFFSET %s", (per_page, offset))
         tampilresep = cur.fetchall()
         cur.close()
-        return render_template('recipe.html',active_page='recipe', dataresep=tampilresep)
+
+        return render_template('recipe.html', active_page='recipe',  dataresep=tampilresep,total_pages=total_pages, page=page)
     else:
         flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
         return redirect(url_for('login'))
-    
+
     
 
 @app.route('/add_recipe', methods=('GET','POST'))
@@ -1137,7 +1155,7 @@ def add_recipe():
         cur = mysql.connection.cursor()
         cur.execute("INSERT INTO recipe (title,ingredients,steps,url) VALUES (%s,%s,%s,%s)",(title,ingredients,steps,url))
         mysql.connection.commit()
-        flash("Data berhasil di tambahkan")
+        flash('Data berhasil ditambah.', 'success')
         return redirect(url_for('recipe'))
                           
     return render_template('recipe_add.html',active_page='recipe')
@@ -1147,7 +1165,7 @@ def delete_recipe(id):
     cur = mysql.connection.cursor()
     cur.execute("DELETE FROM recipe WHERE id=%s", (id,))
     mysql.connection.commit()
-    flash("Data berhasil di hapus")
+    flash('Data berhasil di hapus.', 'danger')
     return redirect(url_for('recipe'))
 
 @app.route('/update_recipe/<int:id>', methods=['GET', 'POST'])
@@ -1179,29 +1197,30 @@ def update_recipe(id):
     return render_template('recipe_update.html', active_page='recipe', row=row)
 
 
-
-@app.route('/food')
-def food():
-     return render_template('food.html',active_page='food')
-
-@app.route('/add_food')
-def add_food():
-                          
-    return render_template('add_food.html',active_page='food')
-
 @app.route('/article')
 def article():
     if session.get('loggedin') and session.get('actor') == '1':
+        page = request.args.get('page', 1, type=int)
+        per_page = 10  
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM article ORDER BY created ASC")
+        cur.execute("SELECT COUNT(*) FROM article")
+        total_data = cur.fetchone()[0]
+        cur.close()
+
+        total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
+
+        offset = (page - 1) * per_page
+
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM article ORDER BY created ASC LIMIT %s OFFSET %s", (per_page, offset))
         tampilartikel = cur.fetchall()
         cur.close()
-        
-        return render_template('article.html',active_page='article', dataartikel=tampilartikel)
+
+        return render_template('article.html',active_page='article',dataartikel=tampilartikel,total_pages=total_pages,page=page)
     else:
         flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
         return redirect(url_for('login'))
-    
+
 
 @app.route('/add_article', methods=('GET', 'POST'))
 def add_article():

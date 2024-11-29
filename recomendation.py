@@ -77,12 +77,6 @@ def evaluate_model(model, X_test, y_test):
     mae = mean_absolute_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
 
-    # Menampilkan hasil
-    #print(f"Mean Squared Error (MSE): {mse}")
-    #print(f"Root Mean Squared Error (RMSE): {rmse}")
-    #print(f"Mean Absolute Error (MAE): {mae}")
-    #print(f"R-squared (R²): {r2}")
-
     return mse
 
 evaluate_model(rf_model, X_test, y_test)

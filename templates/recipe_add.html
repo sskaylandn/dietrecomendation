@@ -31,6 +31,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 
   <!-- Main Stylesheet -->
@@ -126,15 +129,14 @@
             <div class="card">
             <h5 class="card-header">Tambah Data Resep Makanan</h5>
             {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong>{{message}}</strong>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                      </div>
-                    {% endfor %}
-                {% endif %}
-                {% endwith %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                  <strong>{{message}}</strong> 
+                </div>
+              {% endfor %}
+            {% endif %}
+            {% endwith %}
             <div class="table-responsive text-nowrap">
                 <form method="post" action="{{url_for('add_recipe')}}">
                 <div class="sidebar-widget schedule-widget mb-3  ">

@@ -29,8 +29,12 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/slick-carousel/slick/slick.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='plugins/slick-carousel/slick/slick-theme.css') }}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
-
-  <!-- Main Stylesheet -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
 </head>
@@ -49,7 +53,7 @@
 				</div>
 				<div class="col-lg-6">
 					<div class="text-lg-right top-right-bar mt-2 mt-lg-0">
-						<a href="tel:+23-345-67890">
+						<a >
 							<span></span>
 							<span class="h4"></span>
 						</a>
@@ -69,7 +73,7 @@
 				<span class="icofont-navigation-menu"></span>
 			</button>
 
-			<div class="collapse navbar-collapse" id="navbarmain">
+			<div class="navbar-collapse collapse" id="navbarmain" style="">
 				<ul class="navbar-nav ml-auto">
                     
 					<li class="nav-item active"><a class="nav-link" href="{{ url_for('user_dashboard') }}">Home</a></li>
