@@ -36,7 +36,8 @@ app.config['CKEDITOR_PKG_TYPE'] = 'standard'
 app.config['CKEDITOR_SERVE_LOCAL'] = False
 app.config['CKEDITOR_CDN'] = "https://cdn.ckeditor.com/4.25.0/standard/ckeditor.js"
 
-rf_model = joblib.load('C:\\Users\\USER\\dietrecomendation\\rf_model.joblib')
+rf_model = joblib.load('./rf_model.joblib'
+)
 
 @app.route('/')
 def index():

@@ -84,12 +84,12 @@ evaluate_model(rf_model, X_test, y_test)
 
 
 # Simpan model ke file .pkl menggunakan pickle
-rf_model = joblib.load('C:\\Users\\USER\\dietrecomendation\\rf_model.joblib')
+rf_model = joblib.load('./rf_model.joblib')
 
 
 # === Bagian 4: Fungsi Rekomendasi Makanan ===
 def calculate_bmr(gender, age, weight, height):
-    if gender == 'male':
+    if gender == 'pria':
         bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
     else:
         bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age)
@@ -229,16 +229,24 @@ def recommend_balanced_meals(tdee, bmr, goal, data):
 
     # Ensure total calories are aligned with the adjusted goal within ±100 kcal
     calorie_gap = adjusted_calories - total_calories
-    if abs(calorie_gap) > 100:
+    if abs(calorie_gap) > 150:
         if calorie_gap > 0:
-            # Try adding a low-calorie sayur item to breakfast to bridge the gap
-            extra_sayur = find_single_food_by_category(sayur_data, ['D'], num_samples=1)
-            if not extra_sayur.empty and total_calories + extra_sayur['ENERGI'].sum() <= adjusted_calories + 100:
-                breakfast_foods = pd.concat([breakfast_foods, extra_sayur], ignore_index=True)
-                total_calories += extra_sayur['ENERGI'].sum()
+            sayur_count = len(breakfast_foods[breakfast_foods['KODE'].str.startswith('D')]) + \
+                        len(lunch_foods[lunch_foods['KODE'].str.startswith('D')]) + \
+                        len(dinner_foods[dinner_foods['KODE'].str.startswith('D')])
+
+            while total_calories < adjusted_calories - 150 and sayur_count < 3:
+                extra_sayur = find_single_food_by_category(sayur_data, ['D'], num_samples=1)
+                if not extra_sayur.empty and total_calories + extra_sayur['ENERGI'].sum() <= adjusted_calories + 100:
+                    breakfast_foods = pd.concat([breakfast_foods, extra_sayur], ignore_index=True)
+                    total_calories += extra_sayur['ENERGI'].sum()
+                    sayur_count += 1  
+                else:
+                    break  
         elif calorie_gap < 0:
-            # Remove a karbo item from breakfast if calories are high
             breakfast_foods = breakfast_foods[~breakfast_foods['KODE'].str.startswith(('A', 'B'))]
+            dinner_foods = dinner_foods[~dinner_foods['KODE'].str.startswith(('A', 'B'))]
+            snack_foods = find_single_food_by_category(fruit_data, ['ER'], num_samples=1)
             total_calories = (
                 breakfast_foods['ENERGI'].sum() +
                 lunch_foods['ENERGI'].sum() +
@@ -246,15 +254,17 @@ def recommend_balanced_meals(tdee, bmr, goal, data):
                 snack_foods['ENERGI'].sum()
             )
 
+
     print(f"Total Calories from Meals: {total_calories:.2f} vs Adjusted Calories: {adjusted_calories:.2f}")
     
     return breakfast_foods, lunch_foods, dinner_foods, snack_foods
 
 
+
 # === Bagian 5: Menghitung BMR dan Menampilkan Rekomendasi Makanan ===
 
 # Load model
-rf_model = joblib.load('C:\\Users\\USER\\dietrecomendation\\rf_model.joblib')
+rf_model = joblib.load('./rf_model.joblib')
 
 
 
