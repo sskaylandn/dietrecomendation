@@ -135,6 +135,15 @@
 										<span>Kondisi Saat Ini :</span>
 										<h4 class="mb-3">BMI</h4>
 										<h3 class="mb-3">{{ data.bmi }}</h3>
+										{% if data.bmi < 18.5 %}
+											<h6>(Kurus)</h6>
+										{% elif data.bmi >= 18.5 and data.bmi <= 24.9 %}
+											<h6>(Normal)</h6>
+										{% elif data.bmi >= 25 and data.bmi <= 29.9 %}
+											<h6>(Berat Berlebih)</h6>
+										{% elif data.bmi >= 30 %}
+											<h6>(Obesitas)</h6>
+										{% endif %}
 									</div>
 
 									<div class="feature-item col-lg-10 col-md-10 mb-5 mb-lg-0">

@@ -49,8 +49,10 @@ def user_dashboard():
         userid = session.get('userid')  
 
         cur = mysql.connection.cursor()
-        cur.execute("SELECT height, weight, gender, age, goal, activity FROM usercharacteristics WHERE userid = %s", (userid,))
+        cur.execute("SELECT height, gender, age, goal, activity FROM usercharacteristics WHERE userid = %s", (userid,))
         user_data = cur.fetchone()  
+        cur.execute(" SELECT weight FROM tracker WHERE userid = %s ORDER BY datesubmit DESC LIMIT 1", (userid,))
+        latest_weight = cur.fetchone()
         cur.close()
 
         no_data_message = ""
@@ -69,11 +71,11 @@ def user_dashboard():
 
         if data_exists:
             height = user_data[0]
-            weight = user_data[1]
-            gender = user_data[2]
-            age = user_data[3]
-            goal = user_data[4]
-            activity = user_data[5]  
+            weight = latest_weight[0]
+            gender = user_data[1]
+            age = user_data[2]
+            goal = user_data[3]
+            activity = user_data[4]  
 
             height_in_meters = height / 100  
             bmi = weight / (height_in_meters ** 2) if height_in_meters > 0 else "-"
@@ -132,7 +134,7 @@ def user_dashboard():
                              no_data_message=no_data_message, 
                              add_userchar=add_userchar, 
                              labels=labels, 
-                             weight_values=weight_values)
+                             weight_values=weight_values, latest_weight=latest_weight)
     
     flash('Akses Ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.', 'danger')
     return redirect(url_for('login'))
