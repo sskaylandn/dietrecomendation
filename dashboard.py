@@ -240,7 +240,6 @@ def admprofile():
 @app.route('/add_userchar', methods=['GET', 'POST'])
 def add_userchar():
     if request.method == 'POST':
-        # Data for usercharacteristics table
         height = request.form['height']
         weight = request.form['weight']
         gender = request.form['gender']
@@ -248,18 +247,8 @@ def add_userchar():
         goal = request.form['goal']
         activity = request.form['activity']
         
-        # Data for tracker table
-        belly = request.form['belly']
-        waist = request.form['waist']
-        thigh = request.form['thigh']
-        arm = request.form['arm']
-        
-        # Set datesubmit to current date in YYYY-MM-DD format
-        datesubmit = datetime.now().date()  # Only date without time
-
        
-
-        # Check if user is logged in
+        datesubmit = datetime.now().date()  
         userid = session.get('userid')
         if userid is None:
             flash("Anda harus login terlebih dahulu")
@@ -267,38 +256,31 @@ def add_userchar():
 
         cur = mysql.connection.cursor()
         
-        # Insert data into usercharacteristics table
         cur.execute("""
             INSERT INTO usercharacteristics (userid, height, weight, gender, age, goal, activity)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
         """, (userid, height, weight, gender, age, goal, activity))
         
-        # Insert data into tracker table
         cur.execute("""
-            INSERT INTO tracker (userid, weight, belly, waist, thigh, arm, datesubmit)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """, (userid, weight, belly, waist, thigh, arm, datesubmit))
+            INSERT INTO tracker (userid, weight,datesubmit)
+            VALUES (%s, %s, %s)
+        """, (userid, weight,  datesubmit))
 
-        # Commit both inserts to the database
         mysql.connection.commit()
-        
-        # Close the cursor
         cur.close()
-
         flash("Data berhasil ditambahkan ke kedua tabel")
         return redirect(url_for('user_dashboard'))
 
     return render_template('userchar_add.html')
 
 
-# Rute untuk halaman diet plan
 @app.route('/plandiet', methods=['GET', 'POST'])
 def plandiet():
     filtered_data = pd.read_csv('tkpi_filtered.csv')
-    userid = session.get('userid')  # Get the logged-in user's ID
+    userid = session.get('userid')  
 
     if not userid:
-        return redirect(url_for('login'))  # If no user is logged in, redirect to login page
+        return redirect(url_for('login'))  
 
     # Fetch user data from the database
     user_data = get_user_data_by_id(userid)
@@ -314,8 +296,8 @@ def plandiet():
             gender, age, weight, height, activity, goal = '', '', '', '', '', ''
 
 
-    page = request.args.get('page', 1, type=int)  # Get the page number from the request (default to 1)
-    per_page = 5  # Number of items per page (you can change this as needed)
+    page = request.args.get('page', 1, type=int) 
+    per_page = 5  
     active_plan = get_active_diet_plan(userid)
     inactive_plans, total_data, total_pages = get_inactive_diet_plans_by_user(userid, page, per_page)
 
@@ -694,48 +676,40 @@ def tracker():
 @app.route('/uarticle')
 def uarticle():
     if session.get('loggedin') and session.get('actor') == '2':
-        # Ambil parameter pencarian dan kategori dari query string
-        search = request.args.get('search', '')  # Jika tidak ada pencarian, defaultnya kosong
-        category = request.args.get('category', '')  # Ambil kategori dari URL
-        page = request.args.get('page', 1, type=int)  # Ambil nomor halaman, default ke halaman 1
-        per_page = 10  # Jumlah artikel per halaman
+        
+        search = request.args.get('search', '')  
+        category = request.args.get('category', '')  
+        page = request.args.get('page', 1, type=int)  
+        per_page = 6  
 
-        # Mulai membangun query untuk filter berdasarkan title, author, category
         cur = mysql.connection.cursor()
 
         query = "SELECT * FROM article WHERE 1=1"
         params = []
 
-        # Filter berdasarkan pencarian
         if search:
             query += " AND (title LIKE %s OR content LIKE %s OR author LIKE %s OR category LIKE %s)"
             search_pattern = '%' + search + '%'
             params.extend([search_pattern, search_pattern, search_pattern, search_pattern])
 
-        # Filter berdasarkan kategori (jika ada)
         if category:
             query += " AND category = %s"
             params.append(category)
 
-        # Pagination (LIMIT dan OFFSET)
         query += " ORDER BY created ASC LIMIT %s OFFSET %s"
         params.append(per_page)
         params.append((page - 1) * per_page)
 
-        # Eksekusi query dengan parameter pencarian dan kategori
         cur.execute(query, tuple(params))
         tampilartikel = cur.fetchall()
 
-        # Ambil jumlah total artikel berdasarkan filter pencarian dan kategori
         count_query = "SELECT COUNT(*) FROM article WHERE 1=1"
         count_params = []
 
-        # Filter pencarian
         if search:
             count_query += " AND (title LIKE %s OR content LIKE %s OR author LIKE %s OR category LIKE %s)"
             count_params.extend([search_pattern, search_pattern, search_pattern, search_pattern])
 
-        # Filter kategori
         if category:
             count_query += " AND category = %s"
             count_params.append(category)
@@ -747,16 +721,13 @@ def uarticle():
 
         cur.close()
 
-        # Mengambil kategori artikel untuk sidebar
         cur = mysql.connection.cursor()
         cur.execute("""SELECT category, COUNT(*) as count FROM article GROUP BY category""")
         kategori_count = cur.fetchall()
         cur.close()
 
-        # Mengubah kategori_count menjadi dictionary
         jumlahkategori = {row[0]: row[1] for row in kategori_count}
         
-        # Membuat daftar artikel dengan potongan kalimat pertama
         dataartikel = []
         for row in tampilartikel:
             first_sentence = row[2].split('.')[0] + '.' if '.' in row[2] else row[2]
@@ -1020,9 +991,13 @@ def signup():
         email = request.form['email']
         username = request.form['username']
         password = request.form['password']
+        confirm_password = request.form['confirm_password']
         name = request.form['name']
         actor = request.form['actor']
 
+        if password != confirm_password:
+            flash('Password dan konfirmasi password tidak cocok', 'danger')
+            return render_template('signup.html')
         cursor = mysql.connection.cursor()
         
         cursor.execute('SELECT * FROM user WHERE username=%s OR email=%s', (username, email,))
