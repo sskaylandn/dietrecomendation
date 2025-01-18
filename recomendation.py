@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.ensemble import RandomForestRegressor
 import pickle
@@ -57,19 +58,37 @@ filtered_data.to_csv('tkpi_filtered.csv', index=False)
 # Pisahkan fitur dan target
 X = filtered_data[['PROTEIN', 'LEMAK', 'KH', 'SERAT']]
 y = filtered_data['ENERGI']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
+# Definisikan model RandomForest
+rf_model = RandomForestRegressor(random_state=42)
 
-def train_random_forest(X_train, y_train):
-    rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
-    rf_model.fit(X_train, y_train)
-    return rf_model
+# Tentukan ruang pencarian untuk parameter
+param_dist = {
+    'n_estimators': [50, 100, 150, 200],               # Jumlah pohon
+    'max_depth': [5, 10, 20, None],                     # Kedalaman pohon
+    'min_samples_split': [2, 5, 10],                    # Minimum sampel untuk split
+    'min_samples_leaf': [1, 2, 4],                      # Minimum sampel pada daun
+    'bootstrap': [True, False]                          # Penggunaan bootstrap
+}
 
-rf_model = train_random_forest(X_train, y_train)
+# Tentukan RandomizedSearchCV
+random_search = RandomizedSearchCV(rf_model, param_distributions=param_dist, 
+                                   n_iter=10, random_state=42, cv=5, 
+                                   scoring='neg_mean_absolute_error', n_jobs=-1)
+
+# Lakukan pencarian parameter
+random_search.fit(X_train, y_train)
+
+# Tampilkan parameter terbaik
+print(f"Best parameters found: {random_search.best_params_}")
+
+# Model terbaik setelah pencarian
+best_rf_model = random_search.best_estimator_
 
 # Model Evaluation
 def evaluate_model(model, X_test, y_test):
-    y_pred = rf_model.predict(X_test)
+    y_pred = model.predict(X_test)
 
     # Menghitung MSE, RMSE, MAE, dan R²
     mse = mean_squared_error(y_test, y_pred)
@@ -77,14 +96,19 @@ def evaluate_model(model, X_test, y_test):
     mae = mean_absolute_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
 
-    return mse
+    # Menampilkan hasil evaluasi
+    print(f"Root Mean Squared Error (RMSE): {rmse}")
+    print(f"Mean Absolute Error (MAE): {mae}")
+    print(f"R²: {r2}")
 
-evaluate_model(rf_model, X_test, y_test)
+    return mse, rmse, mae, r2
 
+# Evaluasi model terbaik
+evaluate_model(best_rf_model, X_test, y_test)
 
 
 # Simpan model ke file .pkl menggunakan pickle
-rf_model = joblib.load('C:\\Users\\USER\\dietrecomendation\\rf_model.joblib')
+rf_model = joblib.load('./rf_model.joblib')
 
 
 # === Bagian 4: Fungsi Rekomendasi Makanan ===
@@ -250,7 +274,7 @@ def recommend_balanced_meals(tdee, bmr, goal, data):
 # === Bagian 5: Menghitung BMR dan Menampilkan Rekomendasi Makanan ===
 
 # Load model
-rf_model = joblib.load('C:\\Users\\USER\\dietrecomendation\\rf_model.joblib')
+rf_model = joblib.load('./rf_model.joblib')
 
 
 

@@ -282,7 +282,6 @@ def plandiet():
     if not userid:
         return redirect(url_for('login'))  
 
-    # Fetch user data from the database
     user_data = get_user_data_by_id(userid)
 
     if user_data:
@@ -301,7 +300,6 @@ def plandiet():
     active_plan = get_active_diet_plan(userid)
     inactive_plans, total_data, total_pages = get_inactive_diet_plans_by_user(userid, page, per_page)
 
-    # Membuat dictionary kosong untuk setiap jenis makanan
     meal_dict = {
         'breakfast': {},
         'lunch': {},
@@ -311,57 +309,54 @@ def plandiet():
 
     if inactive_plans:
         for plan in inactive_plans:
-            plan_id = plan[0]  # ID plan
+            plan_id = plan[0]  
             
             # Mengambil data sarapan
-            breakfast_data = plan[2]  # Data sarapan
+            breakfast_data = plan[2] 
             if breakfast_data:
                 try:
                     meal_dict['breakfast'][plan_id] = json.loads(breakfast_data)
                 except json.JSONDecodeError:
-                    meal_dict['breakfast'][plan_id] = []  # Handle error jika format JSON rusak
+                    meal_dict['breakfast'][plan_id] = [] 
             else:
-                meal_dict['breakfast'][plan_id] = []  # Jika tidak ada sarapan, set kosong
+                meal_dict['breakfast'][plan_id] = []  
             
             # Mengambil data makan siang
-            lunch_data = plan[3]  # Data makan siang
+            lunch_data = plan[3]  
             if lunch_data:
                 try:
                     meal_dict['lunch'][plan_id] = json.loads(lunch_data)
                 except json.JSONDecodeError:
-                    meal_dict['lunch'][plan_id] = []  # Handle error jika format JSON rusak
+                    meal_dict['lunch'][plan_id] = []  
             else:
-                meal_dict['lunch'][plan_id] = []  # Jika tidak ada makan siang, set kosong
+                meal_dict['lunch'][plan_id] = []  
             
             # Mengambil data makan malam
-            dinner_data = plan[4]  # Data makan malam
+            dinner_data = plan[4] 
             if dinner_data:
                 try:
                     meal_dict['dinner'][plan_id] = json.loads(dinner_data)
                 except json.JSONDecodeError:
-                    meal_dict['dinner'][plan_id] = []  # Handle error jika format JSON rusak
+                    meal_dict['dinner'][plan_id] = []  
             else:
-                meal_dict['dinner'][plan_id] = []  # Jika tidak ada makan malam, set kosong
+                meal_dict['dinner'][plan_id] = []  
             
             # Mengambil data camilan
-            snacks_data = plan[5]  # Data camilan
+            snacks_data = plan[5] 
             if snacks_data:
                 try:
                     meal_dict['snacks'][plan_id] = json.loads(snacks_data)
                 except json.JSONDecodeError:
-                    meal_dict['snacks'][plan_id] = []  # Handle error jika format JSON rusak
+                    meal_dict['snacks'][plan_id] = [] 
             else:
-                meal_dict['snacks'][plan_id] = []  # Jika tidak ada camilan, set kosong
+                meal_dict['snacks'][plan_id] = []  
     else:
-        # Jika tidak ada inactive_plans, set meal_dict ke kosong
         meal_dict = {
             'breakfast': {},
             'lunch': {},
             'dinner': {},
             'snacks': {}
         }
-
-
 
     if active_plan:
         bmr = active_plan['bmr']
@@ -373,7 +368,6 @@ def plandiet():
         snacks = pd.read_json(active_plan['snacks'])
         goal = active_plan['goal']
     else:
-        # If no active plan, set these values to None
         bmr = tdee = adjustedbmr = breakfast = lunch = dinner = snacks = goal = None
 
     if request.method == 'POST':
@@ -400,25 +394,20 @@ def plandiet():
         adjustedbmr = adjust_calories_for_goal(tdee, bmr, user_input['goal'])
 
 
-        # Ensure all values are defined
         bmr = bmr or 0
         tdee = tdee or 0
         adjustedbmr = adjustedbmr or 0
 
-        # Get meal recommendations
+        # meal recommendations
         breakfast, lunch, dinner, snacks = recommend_balanced_meals(tdee, bmr, goal, filtered_data)
 
 
-        # Drop unnecessary columns if they exist in DataFrame
         breakfast = breakfast[['NAMA BAHAN', 'ENERGI', 'PROTEIN', 'KH', 'SERAT']]
         lunch = lunch[['NAMA BAHAN', 'ENERGI', 'PROTEIN', 'KH', 'SERAT']]
         dinner = dinner[['NAMA BAHAN', 'ENERGI', 'PROTEIN', 'KH', 'SERAT']]
         snacks = snacks[['NAMA BAHAN', 'ENERGI', 'PROTEIN', 'KH', 'SERAT']]
 
-        # Update any existing active plan diet to inactive
-        
-
-       # Extract only the 'NAMA BAHAN' from the DataFrames (ingredient names only)
+       # Extract onlyNAMA BAHAN
         breakfast_names = breakfast['NAMA BAHAN'].tolist()
         lunch_names = lunch['NAMA BAHAN'].tolist()
         dinner_names = dinner['NAMA BAHAN'].tolist()
@@ -426,11 +415,11 @@ def plandiet():
 
         deactivate_old_plans(userid)
 
-        # Store only the names in the database as JSON
+        # Store names as JSON
         insert_new_plandiet(userid, json.dumps(breakfast_names), json.dumps(lunch_names), json.dumps(dinner_names), json.dumps(snack_names), bmr, tdee, adjustedbmr)
 
 
-        # Prepare the result to render the template
+        # render the template
         result = {
             'bmr': bmr,
             'tdee': tdee,
@@ -449,34 +438,28 @@ def plandiet():
 
 
 def insert_new_plandiet(userid, breakfast, lunch, dinner, snacks, bmr, tdee, adjustedbmr):
-    # Get the current time in 'YYYY-MM-DD HH:MM:SS' format
+    
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-    # Query to insert the new diet plan, now including bmr, tdee, and adjustedbmr
     query = """
     INSERT INTO dietplan (userid, breakfast, lunch, dinner, snacks, bmr, tdee, adjustedbmr, created, updated, isActive)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
     
-    # Prepare the parameters for the query
     params = (userid, breakfast, lunch, dinner, snacks, bmr, tdee, adjustedbmr, current_time, current_time, 1)
 
-    # Execute the query
     execute_query(query, params)
 
 
 def deactivate_old_plans(userid):
-    # Get the current time for the 'updated' column
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     
-    # Query to deactivate old diet plans
     query = """
     UPDATE dietplan
     SET isActive = 0, updated = %s
     WHERE userid = %s AND isActive = 1
     """
     
-    # Execute the query with the current time and userid as parameters
     execute_query(query, (current_time, userid))
 
 def get_active_diet_plan(userid):
@@ -488,27 +471,22 @@ def get_active_diet_plan(userid):
     cursor = execute_query(query, (userid,))
     
     if cursor:
-        # Fetch one result
         result = cursor.fetchone()
         return result
     else:
-        # Return None if no results are found
         return None
     
 def get_inactive_diet_plans_by_user(userid, page, per_page):
     cur = mysql.connection.cursor()
 
-    # Menghitung total data dietplan untuk pengguna
     cur.execute("SELECT COUNT(*) FROM dietplan WHERE userid = %s", (userid,))
     total_data = cur.fetchone()[0]
 
-    # Menghitung total halaman
     total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
 
-    # Menghitung offset berdasarkan halaman yang dipilih
+    
     offset = (page - 1) * per_page
 
-    # Ambil data dietplan berdasarkan pagination
     cur.execute("SELECT * FROM dietplan WHERE userid = %s ORDER BY created ASC LIMIT %s OFFSET %s", (userid, per_page, offset))
     tampilplan = cur.fetchall()
 
@@ -517,29 +495,29 @@ def get_inactive_diet_plans_by_user(userid, page, per_page):
     return tampilplan, total_data, total_pages 
 
 def execute_query(query, params):
-    # Get the DB connection from Flask-MySQLdb
+  
     cursor = mysql.connection.cursor()
     cursor.execute(query, params)
     mysql.connection.commit()
     cursor.close()
 
-# Function to fetch user data from the database based on the user_id
+# Function to fetch user data 
 def get_user_data_by_id(user_id):
     cursor = mysql.connection.cursor()
     query = "SELECT gender, age, weight, height, activity, goal FROM usercharacteristics WHERE userid = %s"
     cursor.execute(query, (user_id,))
-    user_data = cursor.fetchone()  # Fetch the first matching record
+    user_data = cursor.fetchone()  
     cursor.close()
 
     if user_data:
-        # The columns returned from the query are ordered as gender, age, weight, height, activity, goal
+      
         return {
-            'gender': user_data[0],  # gender is at index 0
-            'age': user_data[1],      # age is at index 1
-            'weight': user_data[2],   # weight is at index 2
-            'height': user_data[3],   # height is at index 3
-            'activity': user_data[4], # activity is at index 4
-            'goal': user_data[5]     # goal is at index 5
+            'gender': user_data[0],  
+            'age': user_data[1],     
+            'weight': user_data[2],   
+            'height': user_data[3],  
+            'activity': user_data[4], 
+            'goal': user_data[5]     
         }
     else:
         return None
